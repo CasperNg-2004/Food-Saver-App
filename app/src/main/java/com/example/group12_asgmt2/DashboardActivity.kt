@@ -134,7 +134,7 @@ class DashboardActivity : AppCompatActivity() {
 
         btnQuickAdd.setOnClickListener {
             Toast.makeText(this, "Go to Add Item page", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, AddFoodActivity::class.java))
+            startActivity(Intent(this, AddFoodActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {

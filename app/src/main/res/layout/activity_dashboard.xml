@@ -57,7 +57,7 @@
                     android:background="@drawable/bg_notification_circle"
                     android:padding="12dp"
                     android:src="@android:drawable/ic_lock_idle_alarm"
-                    android:tint="#14F25C" />
+                    app:tint="#14F25C" />
             </RelativeLayout>
 
             <androidx.cardview.widget.CardView
@@ -285,7 +285,7 @@
                                 android:layout_height="24dp"
                                 android:layout_alignParentEnd="true"
                                 android:src="@android:drawable/ic_menu_sort_by_size"
-                                android:tint="#516A5D" />
+                                app:tint="#516A5D" />
                         </RelativeLayout>
 
                         <LinearLayout
@@ -366,7 +366,7 @@
                                 android:layout_height="24dp"
                                 android:layout_alignParentEnd="true"
                                 android:src="@android:drawable/ic_menu_save"
-                                android:tint="#516A5D" />
+                                app:tint="#516A5D" />
                         </RelativeLayout>
 
                         <TextView
@@ -405,7 +405,7 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:src="@android:drawable/ic_input_add"
-                    android:tint="#012B13" />
+                    app:tint="#012B13" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -488,7 +488,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@android:drawable/ic_menu_view"
-                android:tint="#14F25C" />
+                app:tint="#14F25C" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -511,7 +511,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@android:drawable/ic_menu_agenda"
-                android:tint="#A6B8AD" />
+                app:tint="#A6B8AD" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -540,7 +540,7 @@
                     android:layout_height="26dp"
                     android:layout_gravity="center"
                     android:src="@android:drawable/ic_menu_camera"
-                    android:tint="#012B13" />
+                    app:tint="#012B13" />
             </FrameLayout>
         </LinearLayout>
 
@@ -556,7 +556,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@android:drawable/ic_menu_share"
-                android:tint="#A6B8AD" />
+                app:tint="#A6B8AD" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -579,7 +579,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@android:drawable/ic_menu_edit"
-                android:tint="#A6B8AD" />
+                app:tint="#A6B8AD" />
 
             <TextView
                 android:layout_width="wrap_content"
