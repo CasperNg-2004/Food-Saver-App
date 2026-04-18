@@ -11,6 +11,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -20,4 +23,9 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MobileGroup"
+        maven { url = uri("https://jitpack.io") } //added this for the MPAndroidChart tools
+    }
+}
+
+rootProject.name = "Group12_Asgmt2"
 include(":app")

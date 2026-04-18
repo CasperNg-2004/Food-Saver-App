@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+/build
+=======
 # Android Studio / IntelliJ files
 .idea/
 .gradle/
@@ -13,3 +16,4 @@ app/build/
 
 # System files
 .DS_Store
+>>>>>>> origin/sucmadic
