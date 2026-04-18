@@ -20,12 +20,24 @@ data class Ingredient(
     @SerialName("expiry_date")
     val expiryDate: String,
 
+    @SerialName("purchase_date")
+    val purchaseDate: String? = null,
+
+    @SerialName("alert_enabled")
+    val alertEnabled: Boolean? = true,
+
+    @SerialName("quick_tag")
+    val quickTag: String? = null,
+
+    @SerialName("photo_url")
+    val photoUrl: String? = null,
+
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     @SerialName("created_at")
     val createdAt: String? = null
 )
 
-/** Lightweight payload used for INSERT and UPDATE (excludes server-generated fields). */
+/** Payload used for INSERT and UPDATE */
 @Serializable
 data class IngredientPayload(
     val name: String,
@@ -33,8 +45,21 @@ data class IngredientPayload(
     val quantity: Double,
     val unit: String,
     val price: Double,
+
     @SerialName("expiry_date")
-    val expiryDate: String
+    val expiryDate: String,
+
+    @SerialName("purchase_date")
+    val purchaseDate: String? = null,
+
+    @SerialName("alert_enabled")
+    val alertEnabled: Boolean? = true,
+
+    @SerialName("quick_tag")
+    val quickTag: String? = null,
+
+    @SerialName("photo_url")
+    val photoUrl: String? = null
 )
 
 enum class Category(val displayName: String) {
@@ -52,24 +77,18 @@ enum class Category(val displayName: String) {
     }
 }
 
-/** Standardised units — shared across ingredients & recipe pages for quantity matching. */
 enum class FoodUnit(val symbol: String) {
-    // Weight
     GRAM("g"),
     KILOGRAM("kg"),
     MILLIGRAM("mg"),
     OUNCE("oz"),
     POUND("lb"),
-
-    // Volume
     MILLILITRE("mL"),
     LITRE("L"),
     CUP("cup"),
     TABLESPOON("tbsp"),
     TEASPOON("tsp"),
     FLUID_OUNCE("fl oz"),
-
-    // Count / Pack
     PIECE("pcs"),
     DOZEN("dozen"),
     PACK("pack"),
@@ -79,8 +98,6 @@ enum class FoodUnit(val symbol: String) {
 
     companion object {
         fun symbols(): List<String> = entries.map { it.symbol }
-
-        /** Find enum by symbol — useful in recipe matching logic. */
         fun fromSymbol(symbol: String): FoodUnit? = entries.find { it.symbol == symbol }
     }
 }

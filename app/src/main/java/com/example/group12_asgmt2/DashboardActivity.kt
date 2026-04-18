@@ -2,14 +2,18 @@ package com.example.group12_asgmt2
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -41,9 +45,14 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
 
         bindViews()
-        loadMockDashboardData()
+        loadStaticDashboardFields()
         setupRecipeList()
         setupClickListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadDashboardDataFromSupabase()
     }
 
     private fun bindViews() {
@@ -71,28 +80,56 @@ class DashboardActivity : AppCompatActivity() {
         recyclerRecipes = findViewById(R.id.recyclerRecipes)
     }
 
-    private fun loadMockDashboardData() {
-        val summary = DashboardSummary(
-            kitchenName = "Alex's Kitchen",
-            totalItems = 42,
-            freshCount = 28,
-            nearExpiryCount = 10,
-            expiredCount = 4,
-            usageRate = 85,
-            discardRate = 15,
-            wastedCost = 12.50,
-            weeklySaved = 2.00
-        )
+    /**
+     * Fields that are still mock because current DB does not track
+     * consumed/discarded/wasted cost data yet.
+     */
+    private fun loadStaticDashboardFields() {
+        tvKitchenName.text = "Alex's Kitchen"
+        tvUsageRate.text = "85%"
+        tvDiscardRate.text = "15% Discarded"
+        tvWastedCost.text = "$12.50"
+        tvWeeklySaved.text = "-$2.00 vs last week"
+    }
 
-        tvKitchenName.text = summary.kitchenName
-        tvTotalItems.text = summary.totalItems.toString()
-        tvFreshCount.text = summary.freshCount.toString()
-        tvNearExpiryCount.text = summary.nearExpiryCount.toString()
-        tvExpiredCount.text = summary.expiredCount.toString()
-        tvUsageRate.text = "${summary.usageRate}%"
-        tvDiscardRate.text = "${summary.discardRate}% Discarded"
-        tvWastedCost.text = "$${String.format("%.2f", summary.wastedCost)}"
-        tvWeeklySaved.text = "-$${String.format("%.2f", summary.weeklySaved)} vs last week"
+    private fun loadDashboardDataFromSupabase() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val ingredients = IngredientRepository.getAll()
+
+                val totalItems = ingredients.size
+                val freshCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.FRESH
+                }
+                val nearExpiryCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.SOON
+                }
+                val expiredCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
+                }
+
+                withContext(Dispatchers.Main) {
+                    tvTotalItems.text = totalItems.toString()
+                    tvFreshCount.text = freshCount.toString()
+                    tvNearExpiryCount.text = nearExpiryCount.toString()
+                    tvExpiredCount.text = expiredCount.toString()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@DashboardActivity,
+                        "Failed to load dashboard data: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // fallback values
+                    tvTotalItems.text = "0"
+                    tvFreshCount.text = "0"
+                    tvNearExpiryCount.text = "0"
+                    tvExpiredCount.text = "0"
+                }
+            }
+        }
     }
 
     private fun setupRecipeList() {
@@ -122,6 +159,7 @@ class DashboardActivity : AppCompatActivity() {
 
         recyclerRecipes.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
         recyclerRecipes.adapter = RecipeAdapter(mockRecipes) { recipe ->
             Toast.makeText(this, "Clicked: ${recipe.title}", Toast.LENGTH_SHORT).show()
         }
@@ -133,22 +171,19 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         btnQuickAdd.setOnClickListener {
-            Toast.makeText(this, "Go to Add Item page", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, AddFoodActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {
-            Toast.makeText(this, "View all inventory", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         btnSeeAllRecipes.setOnClickListener {
-            Toast.makeText(this, "View all recipes", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, RecipeActivity::class.java))
+            Toast.makeText(this, "Recipe list page can be connected later", Toast.LENGTH_SHORT).show()
         }
 
         navHome.setOnClickListener {
-            Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+            // already on dashboard
         }
 
         navPantry.setOnClickListener {
@@ -156,7 +191,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navScan.setOnClickListener {
-            Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
         }
 
         navStats.setOnClickListener {

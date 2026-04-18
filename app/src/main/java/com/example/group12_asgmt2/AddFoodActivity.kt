@@ -11,6 +11,11 @@ import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import io.github.jan.supabase.postgrest.from
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -230,20 +235,61 @@ class AddFoodActivity : AppCompatActivity() {
             return
         }
 
-        val message = """
-            Item saved successfully!
-            Name: $itemName
-            Category: $category
-            Purchase Date: $purchaseDate
-            Expiry Date: $expiryDate
-            Quantity: $quantity
-            Tag: $selectedTag
-            Expiry Alert: ${if (expiryAlertOn) "On" else "Off"}
-        """.trimIndent()
+        val payload = IngredientPayload(
+            name = itemName,
+            category = category,
+            quantity = quantity.toDouble(),
+            unit = "pcs",
+            price = 0.0,
+            expiryDate = toIsoDate(expiryDate),
+            purchaseDate = toIsoDate(purchaseDate),
+            alertEnabled = expiryAlertOn,
+            quickTag = selectedTag,
+            photoUrl = null
+        )
 
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        setSavingState(true)
 
-        clearForm()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                SupabaseManager.client
+                    .from("ingredients")
+                    .insert(payload)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@AddFoodActivity,
+                        "Item saved successfully",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    clearForm()
+                    setSavingState(false)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@AddFoodActivity,
+                        "Failed to save item: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    setSavingState(false)
+                }
+            }
+        }
+    }
+
+    private fun setSavingState(isSaving: Boolean) {
+        btnSaveInventory.isEnabled = !isSaving
+        btnSaveInventory.text = if (isSaving) "Saving..." else "Save to Inventory"
+        btnSaveInventory.alpha = if (isSaving) 0.7f else 1f
+    }
+
+    private fun toIsoDate(input: String): String {
+        val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = inputFormat.parse(input)
+            ?: throw IllegalArgumentException("Invalid date format: $input")
+        return outputFormat.format(date)
     }
 
     private fun clearForm() {
