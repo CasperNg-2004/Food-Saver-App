@@ -31,7 +31,10 @@ public class FragmentStatistics extends Fragment {
         // 2. Link the chart from the XML to this Java code
         lineChart = view.findViewById(R.id.lineChartWaste);
 
-        // 3. Draw the chart!
+        // 3. Back button returns to Dashboard
+        view.findViewById(R.id.btnBack).setOnClickListener(v -> requireActivity().finish());
+
+        // 4. Draw the chart!
         setupLineChart();
 
         return view;

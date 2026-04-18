@@ -545,7 +545,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/navShop"
+            android:id="@+id/navStats"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -555,14 +555,14 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@android:drawable/ic_menu_share"
+                android:src="@android:drawable/ic_menu_sort_by_size"
                 app:tint="#A6B8AD" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Shop"
+                android:text="Stats"
                 android:textColor="#A6B8AD"
                 android:textSize="12sp" />
         </LinearLayout>

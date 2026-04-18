@@ -27,6 +27,11 @@
             android:name=".AddFoodActivity"
             android:exported="false" />
 
+        <!-- Statistics Page -->
+        <activity
+            android:name=".StatisticsActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
