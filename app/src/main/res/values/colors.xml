@@ -29,9 +29,14 @@
     <color name="category_fruit">#6A1B9A</color>
     <color name="category_spice">#BF360C</color>
     <color name="category_other">#546E7A</color>
-</resources>
+
+    <!-- Dark Theme Dashboard Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="bg_dark">#101813</color> <color name="card_dark">#1A241B</color> <color name="card_darker">#141D16</color> <color name="green_primary">#2ECC71</color> <color name="green_light">#A9DFBF</color> <color name="red_waste">#E74C3C</color> <color name="text_white">#FFFFFF</color>
+    <color name="bg_dark">#101813</color> 
+    <color name="card_dark">#1A241B</color> 
+    <color name="card_darker">#141D16</color> 
+    <color name="red_waste">#E74C3C</color> 
+    <color name="text_white">#FFFFFF</color>
     <color name="text_grey">#8B9D92</color>
 </resources>

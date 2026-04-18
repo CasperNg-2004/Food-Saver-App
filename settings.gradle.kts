@@ -19,10 +19,6 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-    }
-}
-
-rootProject.name = "MobileGroup"
         maven { url = uri("https://jitpack.io") } //added this for the MPAndroidChart tools
     }
 }

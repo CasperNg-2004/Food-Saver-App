@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">My Pantry</string>
+    <string name="app_name">Group12_Asgmt2</string>
+    <string name="api_key">6dce9499e4ff4ece813dc1d39d977d8a</string>
+
     <string name="title_add_ingredient">Add Ingredient</string>
     <string name="title_edit_ingredient">Edit Ingredient</string>
     <string name="label_name">Ingredient Name</string>
@@ -14,8 +16,4 @@
     <string name="btn_update">Update Ingredient</string>
     <string name="empty_state_title">No ingredients yet</string>
     <string name="empty_state_subtitle">Tap + to add your first item</string>
-</resources>
-<resources>
-    <string name="app_name">Group12_Asgmt2</string>
-    <string name="api_key">6dce9499e4ff4ece813dc1d39d977d8a</string>
 </resources>

@@ -1,129 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background">
-
-    <!-- AppBar -->
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/green_primary"
-            app:title="🥦 My Pantry"
-            app:titleTextColor="@android:color/white"
-            app:subtitleTextColor="@android:color/white" />
-
-        <!-- Category Filter Chips -->
-        <HorizontalScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/green_primary"
-            android:scrollbars="none"
-            android:paddingBottom="8dp">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupCategory"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                app:singleSelection="true" />
-
-        </HorizontalScrollView>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- Main Content -->
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="80dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp" />
-
-            <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/emptyState"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🛒"
-                    android:textSize="64sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No ingredients yet"
-                    android:textSize="18sp"
-                    android:textColor="@color/text_secondary"
-                    android:textStyle="bold"
-                    android:layout_marginTop="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tap + to add your first item"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
-
-            </LinearLayout>
-
-            <!-- Loading -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:indeterminateTint="@color/green_primary" />
-
-        </FrameLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-    <!-- FAB -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabAdd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:text="Add Ingredient"
-        app:icon="@android:drawable/ic_input_add"
-        android:backgroundTint="@color/green_primary"
-        android:textColor="@android:color/white"
-        app:iconTint="@android:color/white"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -131,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
+    android:background="#101813"
     tools:context=".MainActivity">
 
     <TextView
@@ -139,7 +15,7 @@
         android:text="Smart Food Saver"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#333333"
+        android:textColor="#FFFFFF"
         android:layout_marginBottom="8dp" />
 
     <TextView
@@ -147,14 +23,16 @@
         android:layout_height="wrap_content"
         android:text="Enter the ingredients you want to use up, separated by commas."
         android:textSize="14sp"
-        android:textColor="#666666"
+        android:textColor="#A6B8AD"
         android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/editText_ingredients"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#EFEFEF"
+        android:background="#1A241B"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#A6B8AD"
         android:hint="e.g., chicken, rice, carrots"
         android:padding="12dp"
         android:inputType="text"
@@ -167,7 +45,8 @@
         android:text="Find Recipes"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="#4CAF50" />
+        android:textColor="#012B13"
+        android:backgroundTint="#14F25C" />
 
     <ProgressBar
         android:id="@+id/progressBar_loading"

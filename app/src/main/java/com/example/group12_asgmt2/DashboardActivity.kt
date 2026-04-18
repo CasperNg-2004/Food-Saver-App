@@ -139,7 +139,7 @@ class DashboardActivity : AppCompatActivity() {
 
         btnSeeAllInventory.setOnClickListener {
             Toast.makeText(this, "View all inventory", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, InventoryActivity::class.java))
+            startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         btnSeeAllRecipes.setOnClickListener {
@@ -152,7 +152,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navPantry.setOnClickListener {
-            Toast.makeText(this, "Pantry", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         navScan.setOnClickListener {
