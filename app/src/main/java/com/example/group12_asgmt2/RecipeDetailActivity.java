@@ -1,4 +1,4 @@
-package com.example.mobileassg;
+package com.example.group12_asgmt2;
 
 import android.os.Bundle;
 import android.widget.ImageView;

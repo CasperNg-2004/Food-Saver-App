@@ -13,21 +13,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Group12_Asgmt2">
-        <!-- Dashboard (Main Page) -->
-        android:theme="@style/Theme.MobileAssg">
+
+        <!-- Dashboard (Main Page / Launcher) -->
         <activity
             android:name=".DashboardActivity"
-            android:name=".RecipeDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Recipe Search Page -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+        <!-- Recipe Detail Page -->
+        <activity
+            android:name=".RecipeDetailActivity"
+            android:exported="false" />
 
         <!-- Add Food Page -->
         <activity
@@ -41,4 +46,4 @@
 
     </application>
 
-</manifest>
+</manifest>

@@ -1,4 +1,4 @@
-package com.example.mobileassg;
+package com.example.group12_asgmt2;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;

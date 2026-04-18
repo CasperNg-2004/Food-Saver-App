@@ -6,6 +6,10 @@
       <GradleProjectSettings>
         <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+<<<<<<< HEAD
+=======
+        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
+>>>>>>> origin/sucmadic
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
@@ -13,6 +17,19 @@
           </set>
         </option>
       </GradleProjectSettings>
+<<<<<<< HEAD
+=======
+      <GradleProjectSettings>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/.gradle" />
+        <option name="gradleJvm" value="jbr-21" />
+      </GradleProjectSettings>
+      <GradleProjectSettings>
+        <option name="testRunner" value="CHOOSE_PER_TEST" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$/gradle" />
+        <option name="gradleJvm" value="jbr-21" />
+      </GradleProjectSettings>
+>>>>>>> origin/sucmadic
     </option>
   </component>
 </project>

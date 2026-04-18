@@ -9,20 +9,13 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Smart Food Saver"
         android:textSize="28sp"
         android:textStyle="bold"
         android:textColor="#333333"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <TextView
         android:layout_width="match_parent"
@@ -30,7 +23,7 @@
         android:text="Enter the ingredients you want to use up, separated by commas."
         android:textSize="14sp"
         android:textColor="#666666"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp" />
 
     <EditText
         android:id="@+id/editText_ingredients"
@@ -40,7 +33,7 @@
         android:hint="e.g., chicken, rice, carrots"
         android:padding="12dp"
         android:inputType="text"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp" />
 
     <Button
         android:id="@+id/button_search_recipes"
@@ -49,18 +42,19 @@
         android:text="Find Recipes"
         android:textSize="16sp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="#4CAF50"/> <ProgressBar
-    android:id="@+id/progressBar_loading"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:visibility="gone"/>
+        android:backgroundTint="#4CAF50" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ProgressBar
+        android:id="@+id/progressBar_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_recipes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>

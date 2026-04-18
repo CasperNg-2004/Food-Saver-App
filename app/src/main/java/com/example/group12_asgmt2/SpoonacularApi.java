@@ -1,4 +1,4 @@
-package com.example.mobileassg;
+package com.example.group12_asgmt2;
 
 import java.util.List;
 import retrofit2.Call;

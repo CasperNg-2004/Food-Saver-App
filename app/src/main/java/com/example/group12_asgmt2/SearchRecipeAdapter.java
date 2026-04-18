@@ -1,4 +1,4 @@
-package com.example.mobileassg;
+package com.example.group12_asgmt2;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,12 +12,12 @@ import com.bumptech.glide.Glide;
 
 import java.util.List;
 
-public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder> {
+public class SearchRecipeAdapter extends RecyclerView.Adapter<SearchRecipeAdapter.RecipeViewHolder> {
     private List<Recipe> recipeList;
     private Context context;
 
     // Constructor to pass the data into the adapter
-    public RecipeAdapter(Context context, List<Recipe> recipeList) {
+    public SearchRecipeAdapter(Context context, List<Recipe> recipeList) {
         this.context = context;
         this.recipeList = recipeList;
     }

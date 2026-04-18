@@ -164,7 +164,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navRecipes.setOnClickListener {
-            Toast.makeText(this, "Recipes", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }
