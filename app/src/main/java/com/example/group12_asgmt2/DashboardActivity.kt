@@ -31,7 +31,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var navHome: LinearLayout
     private lateinit var navPantry: LinearLayout
     private lateinit var navScan: LinearLayout
-    private lateinit var navShop: LinearLayout
+    private lateinit var navStats: LinearLayout
     private lateinit var navRecipes: LinearLayout
 
     private lateinit var recyclerRecipes: RecyclerView
@@ -65,7 +65,7 @@ class DashboardActivity : AppCompatActivity() {
         navHome = findViewById(R.id.navHome)
         navPantry = findViewById(R.id.navPantry)
         navScan = findViewById(R.id.navScan)
-        navShop = findViewById(R.id.navShop)
+        navStats = findViewById(R.id.navStats)
         navRecipes = findViewById(R.id.navRecipes)
 
         recyclerRecipes = findViewById(R.id.recyclerRecipes)
@@ -139,7 +139,7 @@ class DashboardActivity : AppCompatActivity() {
 
         btnSeeAllInventory.setOnClickListener {
             Toast.makeText(this, "View all inventory", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, InventoryActivity::class.java))
+            startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         btnSeeAllRecipes.setOnClickListener {
@@ -152,19 +152,19 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navPantry.setOnClickListener {
-            Toast.makeText(this, "Pantry", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         navScan.setOnClickListener {
             Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show()
         }
 
-        navShop.setOnClickListener {
-            Toast.makeText(this, "Shop", Toast.LENGTH_SHORT).show()
+        navStats.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
         }
 
         navRecipes.setOnClickListener {
-            Toast.makeText(this, "Recipes", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }
