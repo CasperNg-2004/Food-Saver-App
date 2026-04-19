@@ -22,6 +22,21 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivFoodPhoto"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/expiryStatusStrip"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedImage"
+            android:src="@drawable/ic_launcher_background"
+            android:visibility="gone"/>
+
         <!-- Content area to the right of the strip -->
         <LinearLayout
             android:id="@+id/contentLayout"
@@ -29,9 +44,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp"
-            app:layout_constraintStart_toEndOf="@id/expiryStatusStrip"
+            app:layout_constraintStart_toEndOf="@id/ivFoodPhoto"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginStart="12dp">
 
             <!-- Row 1: Name + Delete Button -->
             <LinearLayout
@@ -57,7 +73,7 @@
                     android:layout_height="36dp"
                     android:src="@android:drawable/ic_menu_delete"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:tint="@color/expiry_expired"
+                    app:tint="@color/expiry_expired"
                     android:contentDescription="Delete ingredient" />
 
             </LinearLayout>

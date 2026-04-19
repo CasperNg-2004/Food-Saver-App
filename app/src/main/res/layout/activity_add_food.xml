@@ -26,7 +26,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:src="@android:drawable/ic_media_previous"
+                android:src="@drawable/ic_arrow_back"
                 app:tint="#FFFFFF" />
 
             <TextView
@@ -45,30 +45,44 @@
             android:layout_marginTop="14dp"
             android:background="#1B4A34" />
 
-        <LinearLayout
+        <FrameLayout
             android:id="@+id/btnAddPhoto"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:background="@drawable/bg_add_photo_circle"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:background="@drawable/bg_add_photo_circle">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_camera"
-                app:tint="#19F25B" />
+            <LinearLayout
+                android:id="@+id/layoutPhotoPlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Add Photo"
-                android:textColor="#19F25B"
-                android:textSize="14sp" />
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_camera"
+                    app:tint="#19F25B" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Add Photo"
+                    android:textColor="#19F25B"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivFoodPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/CircleImage" />
+        </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -128,6 +142,7 @@
                 android:background="@android:color/transparent"
                 android:paddingStart="12dp"
                 android:paddingEnd="36dp"
+                android:textColor="#FFFFFF"
                 android:spinnerMode="dropdown" />
 
             <ImageView
@@ -238,65 +253,159 @@
             </LinearLayout>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quantity"
+                    android:textColor="#D9E8DE"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_quantity_container"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnMinus"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/bg_quantity_minus"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        android:text="-"
+                        android:textAllCaps="false"
+                        android:textColor="#DCE9E0"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvQuantity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="1"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnPlus"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/bg_quantity_plus"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        android:text="+"
+                        android:textAllCaps="false"
+                        android:textColor="#032611"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unit"
+                    android:textColor="#D9E8DE"
+                    android:textSize="13sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:gravity="center_vertical">
+
+                    <Spinner
+                        android:id="@+id/spinnerUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="36dp"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="14dp"
+                        android:src="@android:drawable/arrow_down_float"
+                        app:tint="#A8B8AF" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Quantity"
+            android:text="Total Price ($)"
             android:textColor="#D9E8DE"
             android:textSize="13sp" />
 
         <LinearLayout
-            android:layout_width="112dp"
-            android:layout_height="46dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
             android:layout_marginTop="8dp"
-            android:background="@drawable/bg_quantity_container"
+            android:background="@drawable/bg_input_rounded"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp">
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnMinus"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="@drawable/bg_quantity_minus"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:padding="0dp"
-                android:text="-"
-                android:textAllCaps="false"
-                android:textColor="#DCE9E0"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/tvQuantity"
+            <EditText
+                android:id="@+id/etPrice"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="1"
+                android:background="@android:color/transparent"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
                 android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textColorHint="#7D9A8A"
+                android:textSize="14sp" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnPlus"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="@drawable/bg_quantity_plus"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:padding="0dp"
-                android:text="+"
-                android:textAllCaps="false"
-                android:textColor="#032611"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="MYR"-->
+<!--                android:textColor="#A8B8AF"-->
+<!--                android:textSize="12sp" />-->
         </LinearLayout>
 
         <View
@@ -346,8 +455,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:thumbTint="#FFFFFF"
-                android:trackTint="#19F25B" />
+                android:thumbTint="@color/switch_thumb_selector"
+                android:trackTint="@color/switch_track_selector" />
         </LinearLayout>
 
         <TextView

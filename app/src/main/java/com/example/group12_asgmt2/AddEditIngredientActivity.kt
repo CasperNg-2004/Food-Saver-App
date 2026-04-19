@@ -1,21 +1,35 @@
 package com.example.group12_asgmt2
 
 import android.app.DatePickerDialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.example.group12_asgmt2.databinding.ActivityAddEditIngredientBinding
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.UUID
 
 class AddEditIngredientActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddEditIngredientBinding
     private var editingIngredient: Ingredient? = null
     private var selectedDate: LocalDate = LocalDate.now().plusDays(7)
+    private var selectedImageUri: Uri? = null
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            binding.ivFoodPhoto.setImageURI(it)
+            binding.ivFoodPhoto.visibility = View.VISIBLE
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +48,8 @@ class AddEditIngredientActivity : AppCompatActivity() {
                 quantity = intent.getDoubleExtra(InventoryActivity.EXTRA_QUANTITY, 0.0),
                 unit     = intent.getStringExtra(InventoryActivity.EXTRA_UNIT)     ?: "",
                 price    = intent.getDoubleExtra(InventoryActivity.EXTRA_PRICE, 0.0),
-                expiryDate = intent.getStringExtra(InventoryActivity.EXTRA_EXPIRY) ?: ""
+                expiryDate = intent.getStringExtra(InventoryActivity.EXTRA_EXPIRY) ?: "",
+                photoUrl = intent.getStringExtra(InventoryActivity.EXTRA_PHOTO)
             )
         }
 
@@ -45,6 +60,7 @@ class AddEditIngredientActivity : AppCompatActivity() {
         setupCategoryDropdown()
         setupUnitDropdown()
         setupDatePicker()
+        setupPhotoPicker()
         setupSaveButton(isEditing)
 
         if (isEditing) prefillForm(editingIngredient!!)
@@ -98,6 +114,17 @@ class AddEditIngredientActivity : AppCompatActivity() {
             selectedDate = LocalDate.parse(ingredient.expiryDate)
             updateDateDisplay()
         }
+        
+        if (!ingredient.photoUrl.isNullOrEmpty()) {
+            binding.ivFoodPhoto.visibility = View.VISIBLE
+            Glide.with(this).load(ingredient.photoUrl).into(binding.ivFoodPhoto)
+        }
+    }
+
+    private fun setupPhotoPicker() {
+        binding.btnPickPhoto.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
     }
 
     private fun validateForm(): Boolean {
@@ -132,20 +159,34 @@ class AddEditIngredientActivity : AppCompatActivity() {
     }
 
     private fun saveIngredient(isEditing: Boolean) {
-        val payload = IngredientPayload(
-            name      = binding.etName.text.toString().trim(),
-            category  = binding.autoCompleteCategory.text.toString().trim(),
-            quantity  = binding.etQuantity.text.toString().toDoubleOrNull() ?: 0.0,
-            unit      = binding.autoCompleteUnit.text.toString().trim(),
-            price     = binding.etPrice.text.toString().toDoubleOrNull() ?: 0.0,
-            expiryDate = DateUtils.formatForDb(selectedDate)
-        )
-
         binding.btnSave.isEnabled = false
         binding.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
             try {
+                var photoUrl = editingIngredient?.photoUrl
+
+                // 1. Upload photo if a NEW one was selected
+                selectedImageUri?.let { uri ->
+                    val fileName = "food_${UUID.randomUUID()}.jpg"
+                    val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    if (bytes != null) {
+                        val bucket = SupabaseManager.client.storage.from("food-photos")
+                        bucket.upload(fileName, bytes)
+                        photoUrl = bucket.publicUrl(fileName)
+                    }
+                }
+
+                val payload = IngredientPayload(
+                    name = binding.etName.text.toString().trim(),
+                    category = binding.autoCompleteCategory.text.toString().trim(),
+                    quantity = binding.etQuantity.text.toString().toDoubleOrNull() ?: 0.0,
+                    unit = binding.autoCompleteUnit.text.toString().trim(),
+                    price = binding.etPrice.text.toString().toDoubleOrNull() ?: 0.0,
+                    expiryDate = DateUtils.formatForDb(selectedDate),
+                    photoUrl = photoUrl
+                )
+
                 if (isEditing) {
                     IngredientRepository.update(editingIngredient!!.id!!, payload)
                     Toast.makeText(

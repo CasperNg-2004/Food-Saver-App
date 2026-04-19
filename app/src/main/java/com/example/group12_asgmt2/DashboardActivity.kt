@@ -78,6 +78,7 @@ class DashboardActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         loadDashboardDataFromSupabase()
+        loadProfileFromSupabase()
     }
 
     private fun bindViews() {
@@ -110,18 +111,40 @@ class DashboardActivity : AppCompatActivity() {
         recyclerRecipes = findViewById(R.id.recyclerRecipes)
     }
 
-    /**
-     * Fields that are still mock because current DB does not track
-     * consumed/discarded/wasted cost data yet.
-     */
     private fun loadStaticDashboardFields() {
-        val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
-        val userName = sharedPref.getString("user_name", "Alex")
-        tvKitchenName.text = "$userName's Kitchen"
-
         // Mock historical data for now
         tvWeeklySaved.text = "$42.50 vs last week"
         tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+    }
+
+    private fun loadProfileFromSupabase() {
+        val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+        val profileId = sharedPref.getString("current_profile_id", null)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val profile = if (profileId != null) {
+                    ProfileRepository.getById(profileId)
+                } else {
+                    // If no ID stored, just get the first one available as a default
+                    ProfileRepository.getAll().firstOrNull()
+                }
+
+                withContext(Dispatchers.Main) {
+                    if (profile != null) {
+                        tvKitchenName.text = "${profile.kitchenName}'s Kitchen"
+                        // Save ID if it wasn't there
+                        if (profileId == null) {
+                            sharedPref.edit().putString("current_profile_id", profile.id).apply()
+                        }
+                    } else {
+                        tvKitchenName.text = "Alex's Kitchen"
+                    }
+                }
+            } catch (e: Exception) {
+                // Fallback
+            }
+        }
     }
 
     private fun setupPieChart() {
@@ -282,6 +305,10 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, MainActivity::class.java))
         }
 
+        tvKitchenName.setOnClickListener {
+            showEditNameDialog()
+        }
+
         navHome.setOnClickListener {
             // already on dashboard
         }
@@ -302,6 +329,59 @@ class DashboardActivity : AppCompatActivity() {
 
         navRecipes.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
+        }
+    }
+
+    private fun showEditNameDialog() {
+        val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+        val profileId = sharedPref.getString("current_profile_id", null)
+        val currentTitle = tvKitchenName.text.toString().removeSuffix("'s Kitchen")
+
+        val editText = android.widget.EditText(this)
+        editText.setText(currentTitle)
+        editText.setSelection(editText.text.length)
+
+        val padding = (16 * resources.displayMetrics.density).toInt()
+        val container = android.widget.FrameLayout(this)
+        container.addView(editText)
+        editText.setPadding(padding, padding, padding, padding)
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Edit Kitchen Name")
+            .setMessage("Enter new kitchen name:")
+            .setView(container)
+            .setPositiveButton("Save") { _, _ ->
+                val newName = editText.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    updateProfileInSupabase(profileId, newName)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun updateProfileInSupabase(profileId: String?, newName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                if (profileId != null) {
+                    // Update existing
+                    ProfileRepository.update(profileId, ProfilePayload(username = "User", kitchenName = newName))
+                } else {
+                    // Create new if none exists
+                    val newProfile = ProfileRepository.insert(ProfilePayload(username = "User", kitchenName = newName))
+                    getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+                        .edit().putString("current_profile_id", newProfile.id).apply()
+                }
+
+                withContext(Dispatchers.Main) {
+                    tvKitchenName.text = "$newName's Kitchen"
+                    Toast.makeText(this@DashboardActivity, "Name updated in database", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DashboardActivity, "Error saving to DB: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         }
     }
 }

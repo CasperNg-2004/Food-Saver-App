@@ -1,11 +1,13 @@
 package com.example.group12_asgmt2
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.group12_asgmt2.databinding.ItemIngredientBinding
 
 class IngredientAdapter(
@@ -55,6 +57,17 @@ class IngredientAdapter(
             tvQuantity.text = "${ingredient.quantity} ${ingredient.unit}"
             tvPrice.text = "RM ${String.format("%.2f", ingredient.price)}"
             tvExpiryDate.text = DateUtils.formatForDisplay(ingredient.expiryDate)
+
+            // Photo
+            if (!ingredient.photoUrl.isNullOrEmpty()) {
+                ivFoodPhoto.visibility = View.VISIBLE
+                Glide.with(ctx)
+                    .load(ingredient.photoUrl)
+                    .centerCrop()
+                    .into(ivFoodPhoto)
+            } else {
+                ivFoodPhoto.visibility = View.GONE
+            }
 
             // Category badge color
             val colorRes = CATEGORY_COLORS[ingredient.category] ?: R.color.category_other

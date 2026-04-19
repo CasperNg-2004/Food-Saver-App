@@ -30,6 +30,7 @@ class InventoryActivity : AppCompatActivity() {
         const val EXTRA_UNIT     = "ingredient_unit"
         const val EXTRA_PRICE    = "ingredient_price"
         const val EXTRA_EXPIRY   = "ingredient_expiry"
+        const val EXTRA_PHOTO    = "ingredient_photo"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +66,7 @@ class InventoryActivity : AppCompatActivity() {
                     putExtra(EXTRA_UNIT,     ingredient.unit)
                     putExtra(EXTRA_PRICE,    ingredient.price)
                     putExtra(EXTRA_EXPIRY,   ingredient.expiryDate)
+                    putExtra(EXTRA_PHOTO,    ingredient.photoUrl)
                 }
                 startActivityForResult(intent, REQUEST_CODE_ADD_EDIT)
             },

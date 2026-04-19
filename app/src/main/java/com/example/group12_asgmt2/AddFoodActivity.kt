@@ -1,17 +1,22 @@
 package com.example.group12_asgmt2
 
 import android.app.DatePickerDialog
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,11 +24,14 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class AddFoodActivity : AppCompatActivity() {
 
     private lateinit var btnBack: ImageView
-    private lateinit var btnAddPhoto: LinearLayout
+    private lateinit var btnAddPhoto: FrameLayout
+    private lateinit var ivFoodPhoto: ImageView
+    private lateinit var layoutPhotoPlaceholder: LinearLayout
 
     private lateinit var etItemName: EditText
     private lateinit var spinnerCategory: Spinner
@@ -33,6 +41,8 @@ class AddFoodActivity : AppCompatActivity() {
     private lateinit var btnMinus: Button
     private lateinit var btnPlus: Button
     private lateinit var tvQuantity: TextView
+    private lateinit var spinnerUnit: Spinner
+    private lateinit var etPrice: EditText
 
     private lateinit var switchExpiryAlert: Switch
 
@@ -48,6 +58,16 @@ class AddFoodActivity : AppCompatActivity() {
 
     private var quantity = 1
     private var selectedTag = "Fresh"
+    private var selectedImageUri: Uri? = null
+
+    private val pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            ivFoodPhoto.setImageURI(it)
+            ivFoodPhoto.visibility = View.VISIBLE
+            layoutPhotoPlaceholder.visibility = View.GONE
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +85,8 @@ class AddFoodActivity : AppCompatActivity() {
     private fun bindViews() {
         btnBack = findViewById(R.id.btnBack)
         btnAddPhoto = findViewById(R.id.btnAddPhoto)
+        ivFoodPhoto = findViewById(R.id.ivFoodPhoto)
+        layoutPhotoPlaceholder = findViewById(R.id.layoutPhotoPlaceholder)
 
         etItemName = findViewById(R.id.etItemName)
         spinnerCategory = findViewById(R.id.spinnerCategory)
@@ -74,6 +96,8 @@ class AddFoodActivity : AppCompatActivity() {
         btnMinus = findViewById(R.id.btnMinus)
         btnPlus = findViewById(R.id.btnPlus)
         tvQuantity = findViewById(R.id.tvQuantity)
+        spinnerUnit = findViewById(R.id.spinnerUnit)
+        etPrice = findViewById(R.id.etPrice)
 
         switchExpiryAlert = findViewById(R.id.switchExpiryAlert)
 
@@ -102,11 +126,25 @@ class AddFoodActivity : AppCompatActivity() {
 
         val adapter = android.widget.ArrayAdapter(
             this,
-            android.R.layout.simple_spinner_item,
+            R.layout.spinner_item,
             categories
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = adapter
+
+        // Setup Unit Spinner
+        val units = FoodUnit.symbols()
+        val unitAdapter = android.widget.ArrayAdapter(
+            this,
+            R.layout.spinner_item,
+            units
+        )
+        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerUnit.adapter = unitAdapter
+        
+        // Set default to "pcs" if available
+        val pcsIndex = units.indexOf("pcs")
+        if (pcsIndex >= 0) spinnerUnit.setSelection(pcsIndex)
     }
 
     private fun setupDatePickers() {
@@ -199,7 +237,7 @@ class AddFoodActivity : AppCompatActivity() {
         }
 
         btnAddPhoto.setOnClickListener {
-            Toast.makeText(this, "Photo upload can be added later", Toast.LENGTH_SHORT).show()
+            pickImageLauncher.launch("image/*")
         }
 
         btnSaveInventory.setOnClickListener {
@@ -212,6 +250,9 @@ class AddFoodActivity : AppCompatActivity() {
         val category = spinnerCategory.selectedItem.toString()
         val purchaseDate = etPurchaseDate.text.toString().trim()
         val expiryDate = etExpiryDate.text.toString().trim()
+        val unit = spinnerUnit.selectedItem.toString()
+        val priceStr = etPrice.text.toString().trim()
+        val price = priceStr.toDoubleOrNull() ?: 0.0
         val expiryAlertOn = switchExpiryAlert.isChecked
 
         if (itemName.isEmpty()) {
@@ -235,23 +276,38 @@ class AddFoodActivity : AppCompatActivity() {
             return
         }
 
-        val payload = IngredientPayload(
-            name = itemName,
-            category = category,
-            quantity = quantity.toDouble(),
-            unit = "pcs",
-            price = 0.0,
-            expiryDate = toIsoDate(expiryDate),
-            purchaseDate = toIsoDate(purchaseDate),
-            alertEnabled = expiryAlertOn,
-            quickTag = selectedTag,
-            photoUrl = null
-        )
-
         setSavingState(true)
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                var photoUrl: String? = null
+                
+                // 1. Upload photo if selected
+                selectedImageUri?.let { uri ->
+                    val fileName = "food_${UUID.randomUUID()}.jpg"
+                    val bytes = contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                    
+                    if (bytes != null) {
+                        val bucket = SupabaseManager.client.storage.from("food-photos")
+                        bucket.upload(fileName, bytes)
+                        photoUrl = bucket.publicUrl(fileName)
+                    }
+                }
+
+                // 2. Insert record
+                val payload = IngredientPayload(
+                    name = itemName,
+                    category = category,
+                    quantity = quantity.toDouble(),
+                    unit = unit,
+                    price = price,
+                    expiryDate = toIsoDate(expiryDate),
+                    purchaseDate = toIsoDate(purchaseDate),
+                    alertEnabled = expiryAlertOn,
+                    quickTag = selectedTag,
+                    photoUrl = photoUrl
+                )
+
                 SupabaseManager.client
                     .from("ingredients")
                     .insert(payload)
@@ -297,8 +353,18 @@ class AddFoodActivity : AppCompatActivity() {
         spinnerCategory.setSelection(0)
         etPurchaseDate.text.clear()
         etExpiryDate.text.clear()
+        etPrice.text.clear()
         quantity = 1
         updateQuantityUI()
+
+        selectedImageUri = null
+        ivFoodPhoto.visibility = View.GONE
+        layoutPhotoPlaceholder.visibility = View.VISIBLE
+        
+        val units = FoodUnit.symbols()
+        val pcsIndex = units.indexOf("pcs")
+        if (pcsIndex >= 0) spinnerUnit.setSelection(pcsIndex)
+
         switchExpiryAlert.isChecked = true
         tagFresh.performClick()
     }
