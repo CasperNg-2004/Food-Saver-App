@@ -7,9 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+import com.bumptech.glide.Glide
+
 class RecipeAdapter(
-    private val items: List<RecipeItem>,
-    private val onClick: (RecipeItem) -> Unit
+    private val items: List<Recipe>,
+    private val onClick: (Recipe) -> Unit
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     inner class RecipeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -29,11 +31,16 @@ class RecipeAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val item = items[position]
 
-        holder.ivRecipe.setImageResource(item.imageResId)
-        holder.tvTime.text = item.time
+        Glide.with(holder.itemView.context)
+            .load(item.image)
+            .into(holder.ivRecipe)
+
+        holder.tvTime.text = "${15 + (position * 5)}m"
         holder.tvTitle.text = item.title
-        holder.tvExpiryTag.text = item.expiryTag
-        holder.tvIngredientTag.text = item.ingredientTag
+
+        val firstUsed = item.usedIngredients.firstOrNull()?.name ?: "Ingredients"
+        holder.tvExpiryTag.text = "Uses $firstUsed"
+        holder.tvIngredientTag.text = "${item.usedIngredientCount} items owned"
 
         holder.itemView.setOnClickListener {
             onClick(item)
