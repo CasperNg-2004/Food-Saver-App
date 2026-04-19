@@ -11,10 +11,12 @@ object SupabaseManager {
         "eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhc2llaXdldHd3ZGJiYW1kZWFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODY4MTMsImV4cCI6MjA5MjA2MjgxM30." +
         "8G9vHehZmcE83Z7oym9-7tKf3wg-hswn-eD6qEWMsa4"
 
-    val client = createSupabaseClient(
-        supabaseUrl = SUPABASE_URL,
-        supabaseKey = SUPABASE_ANON_KEY
-    ) {
-        install(Postgrest)
+    val client by lazy {
+        createSupabaseClient(
+            supabaseUrl = SUPABASE_URL,
+            supabaseKey = SUPABASE_ANON_KEY
+        ) {
+            install(Postgrest)
+        }
     }
 }
