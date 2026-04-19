@@ -182,6 +182,7 @@ class InventoryActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
+            overridePendingTransition(0, 0)
         }
 
         binding.navPantry.setOnClickListener {
@@ -193,11 +194,13 @@ class InventoryActivity : AppCompatActivity() {
         binding.navStats.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))
             finish()
+            overridePendingTransition(0, 0)
         }
 
         binding.navRecipes.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
+            overridePendingTransition(0, 0)
         }
         
         binding.btnNotification.setOnClickListener {

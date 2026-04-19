@@ -83,17 +83,20 @@ public class MainActivity extends AppCompatActivity {
             android.content.Intent intent = new android.content.Intent(MainActivity.this, DashboardActivity.class);
             intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         });
         navPantry.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(MainActivity.this, InventoryActivity.class);
             intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
         navStats.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(MainActivity.this, StatisticsActivity.class);
             intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
+            overridePendingTransition(0, 0);
         });
         navRecipes.setOnClickListener(v -> {
             // Already here

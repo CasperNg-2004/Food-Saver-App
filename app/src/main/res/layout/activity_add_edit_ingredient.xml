@@ -26,7 +26,7 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:src="@android:drawable/ic_media_previous"
+                android:src="@drawable/ic_arrow_back"
                 app:tint="#FFFFFF" />
 
             <TextView
@@ -364,7 +364,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Price"
+            android:text="Total Price ($)"
             android:textColor="#D9E8DE"
             android:textSize="13sp" />
 
@@ -381,7 +381,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="RM "
+                android:text=""
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
