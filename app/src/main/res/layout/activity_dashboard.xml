@@ -473,7 +473,7 @@
         android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        android:weightSum="4">
+        android:weightSum="5">
 
         <LinearLayout
             android:id="@+id/navHome"
@@ -521,7 +521,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!--
         <LinearLayout
             android:id="@+id/navScan"
             android:layout_width="0dp"
@@ -543,7 +542,6 @@
                     app:tint="#012B13" />
             </FrameLayout>
         </LinearLayout>
-        -->
 
         <LinearLayout
             android:id="@+id/navStats"

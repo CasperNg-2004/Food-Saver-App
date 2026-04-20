@@ -104,7 +104,7 @@ class DashboardActivity : AppCompatActivity() {
 
         navHome = findViewById(R.id.navHome)
         navPantry = findViewById(R.id.navPantry)
-//        navScan = findViewById(R.id.navScan)
+        navScan = findViewById(R.id.navScan)
         navStats = findViewById(R.id.navStats)
         navRecipes = findViewById(R.id.navRecipes)
 
@@ -317,11 +317,9 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, InventoryActivity::class.java))
         }
 
-        /*
         navScan.setOnClickListener {
             Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
         }
-        */
 
         navStats.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))
