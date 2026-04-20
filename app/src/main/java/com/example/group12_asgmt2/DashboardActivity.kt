@@ -290,7 +290,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         btnNotification.setOnClickListener {
-            startActivity(Intent(this, InventoryActivity::class.java))
+            showExpiryNotifications()
         }
 
         btnQuickAdd.setOnClickListener {
@@ -380,6 +380,41 @@ class DashboardActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@DashboardActivity, "Error saving to DB: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun showExpiryNotifications() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val ingredients = IngredientRepository.getAll()
+                val criticalIngredients = ingredients.filter {
+                    val status = DateUtils.getExpiryStatus(it.expiryDate)
+                    status == DateUtils.ExpiryStatus.EXPIRED || status == DateUtils.ExpiryStatus.SOON
+                }
+
+                withContext(Dispatchers.Main) {
+                    if (criticalIngredients.isEmpty()) {
+                        Toast.makeText(this@DashboardActivity, "All items are fresh!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val message = StringBuilder()
+                        criticalIngredients.forEach {
+                            val status = DateUtils.getExpiryStatus(it.expiryDate)
+                            val statusStr = if (status == DateUtils.ExpiryStatus.EXPIRED) "Expired" else "Nearly Expired"
+                            message.append("• ${it.name}: $statusStr\n")
+                        }
+
+                        androidx.appcompat.app.AlertDialog.Builder(this@DashboardActivity)
+                            .setTitle("Expiry Notifications")
+                            .setMessage(message.toString().trim())
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DashboardActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
