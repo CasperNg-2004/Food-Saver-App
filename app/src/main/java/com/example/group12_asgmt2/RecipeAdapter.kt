@@ -44,7 +44,12 @@ class RecipeAdapter(
         holder.tvIngredientTag.text = "Missing ${item.missedIngredientCount}"
 
         holder.itemView.setOnClickListener {
-            onClick(item)
+            try {
+                onClick(item)
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(holder.itemView.context, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                e.printStackTrace()
+            }
         }
     }
 

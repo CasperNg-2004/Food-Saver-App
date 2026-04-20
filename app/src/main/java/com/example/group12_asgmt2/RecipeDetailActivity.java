@@ -22,46 +22,59 @@ public class RecipeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        // 1. Find the UI elements
-        ImageView imageView = findViewById(R.id.imageView_detail_recipe);
-        TextView titleText = findViewById(R.id.textView_detail_title);
-        TextView usedIngredientsText = findViewById(R.id.textView_used_ingredients);
-        TextView missedIngredientsText = findViewById(R.id.textView_missed_ingredients);
-        instructionsText = findViewById(R.id.textView_instructions);
+        try {
+            // 1. Find the UI elements
+            ImageView imageView = findViewById(R.id.imageView_detail_recipe);
+            TextView titleText = findViewById(R.id.textView_detail_title);
+            TextView usedIngredientsText = findViewById(R.id.textView_used_ingredients);
+            TextView missedIngredientsText = findViewById(R.id.textView_missed_ingredients);
+            instructionsText = findViewById(R.id.textView_instructions);
 
-        // 2. Initialize Retrofit for this screen
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.spoonacular.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        apiService = retrofit.create(SpoonacularApi.class);
+            // 2. Initialize Retrofit for this screen
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.spoonacular.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            apiService = retrofit.create(SpoonacularApi.class);
 
-        // 3. Unpack the Recipe data sent from the Adapter
-        Recipe clickedRecipe = (Recipe) getIntent().getSerializableExtra("RECIPE_DATA");
+            // 3. Unpack the Recipe data sent from the Adapter
+            Recipe clickedRecipe = (Recipe) getIntent().getSerializableExtra("RECIPE_DATA");
 
-        // 4. Display the data and fetch instructions
-        if (clickedRecipe != null) {
-            Glide.with(this).load(clickedRecipe.getImage()).into(imageView);
-            titleText.setText(clickedRecipe.getTitle());
+            // 4. Display the data and fetch instructions
+            if (clickedRecipe != null) {
+                Glide.with(this).load(clickedRecipe.getImage()).into(imageView);
+                titleText.setText(clickedRecipe.getTitle());
 
-            // Build list of ingredients you HAVE
-            StringBuilder usedList = new StringBuilder();
-            for (Recipe.Ingredient ingredient : clickedRecipe.getUsedIngredients()) {
-                usedList.append("• ").append(ingredient.getOriginal()).append("\n");
+                // Build list of ingredients you HAVE
+                StringBuilder usedList = new StringBuilder();
+                if (clickedRecipe.getUsedIngredients() != null) {
+                    for (Recipe.Ingredient ingredient : clickedRecipe.getUsedIngredients()) {
+                        if (ingredient != null) {
+                            usedList.append("• ").append(ingredient.getOriginal()).append("\n");
+                        }
+                    }
+                }
+                if (usedList.length() == 0) usedList.append("None\n");
+                usedIngredientsText.setText(usedList.toString());
+
+                // Build list of ingredients you are MISSING
+                StringBuilder missedList = new StringBuilder();
+                if (clickedRecipe.getMissedIngredients() != null) {
+                    for (Recipe.Ingredient ingredient : clickedRecipe.getMissedIngredients()) {
+                        if (ingredient != null) {
+                            missedList.append("• ").append(ingredient.getOriginal()).append("\n");
+                        }
+                    }
+                }
+                if (missedList.length() == 0) missedList.append("None! You have everything!\n");
+                missedIngredientsText.setText(missedList.toString());
+
+                // 👉 NEW: Trigger the network call to get the cooking steps!
+                fetchRecipeInstructions(clickedRecipe.getId());
             }
-            if (usedList.length() == 0) usedList.append("None\n");
-            usedIngredientsText.setText(usedList.toString());
-
-            // Build list of ingredients you are MISSING
-            StringBuilder missedList = new StringBuilder();
-            for (Recipe.Ingredient ingredient : clickedRecipe.getMissedIngredients()) {
-                missedList.append("• ").append(ingredient.getOriginal()).append("\n");
-            }
-            if (missedList.length() == 0) missedList.append("None! You have everything!\n");
-            missedIngredientsText.setText(missedList.toString());
-
-            // 👉 NEW: Trigger the network call to get the cooking steps!
-            fetchRecipeInstructions(clickedRecipe.getId());
+        } catch (Exception e) {
+            Toast.makeText(this, "Crash in Detail: " + e.toString(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 

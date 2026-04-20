@@ -44,18 +44,22 @@ public class SearchRecipeAdapter extends RecyclerView.Adapter<SearchRecipeAdapte
                 .load(recipe.getImage())
                 .into(holder.recipeImage);
 
-        // FIXED: This click listener is now INSIDE the method!
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent (a delivery truck) to go to a new screen
-                android.content.Intent intent = new android.content.Intent(context, RecipeDetailActivity.class);
+                try {
+                    // Create an Intent (a delivery truck) to go to a new screen
+                    android.content.Intent intent = new android.content.Intent(context, RecipeDetailActivity.class);
 
-                // Put the specific recipe they clicked inside the truck
-                intent.putExtra("RECIPE_DATA", recipe);
+                    // Put the specific recipe they clicked inside the truck
+                    intent.putExtra("RECIPE_DATA", recipe);
 
-                // Start the drive!
-                context.startActivity(intent);
+                    // Start the drive!
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    android.widget.Toast.makeText(context, "Error opening recipe: " + e.toString(), android.widget.Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
             }
         });
     }

@@ -1,168 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_dashboard">
+    android:padding="24dp"
+    android:background="#101813"
+    tools:context=".MainActivity">
 
-    <!-- Inner content with scrolling capability pushing the nav bar down -->
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:text="Your Pantry"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Find Recipes"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
-
-        <EditText
-            android:id="@+id/editText_ingredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter ingredients (e.g. apple, flour)"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#7FA092"
-            android:backgroundTint="#14F25C"/>
-
-        <Button
-            android:id="@+id/button_search_recipes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Search Recipes"
-            android:backgroundTint="#14F25C"
-            android:textColor="#012B13"
-            android:textStyle="bold"/>
-
-        <ProgressBar
-            android:id="@+id/progressBar_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            android:indeterminateTint="#14F25C"
-            android:layout_marginTop="16dp"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_recipes"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="16dp"
-            android:clipToPadding="false"/>
-    </LinearLayout>
-
-    <!-- Bottom Navigation Bar -->
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_pantry_status"
         android:layout_width="match_parent"
-        android:layout_height="74dp"
-        android:background="#082517"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:weightSum="4">
+        android:layout_height="wrap_content"
+        android:text="Loading pantry items..."
+        android:textSize="14sp"
+        android:textColor="#A6B8AD"
+        android:layout_marginBottom="8dp" />
 
-        <LinearLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_pantry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal" />
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@android:drawable/ic_menu_view"
-                app:tint="#A6B8AD" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Find Recipes"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Home"
-                android:textColor="#A6B8AD"
-                android:textSize="10sp" />
-        </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Auto-generating recipes from your pantry ingredients."
+        android:textSize="14sp"
+        android:textColor="#A6B8AD"
+        android:layout_marginBottom="16dp" />
 
-        <LinearLayout
-            android:id="@+id/navPantry"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
+    <EditText
+        android:id="@+id/editText_ingredients"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#1A241B"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#A6B8AD"
+        android:hint="e.g., chicken, rice, carrots"
+        android:padding="12dp"
+        android:inputType="text"
+        android:layout_marginBottom="16dp" />
 
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@android:drawable/ic_menu_agenda"
-                app:tint="#A6B8AD" />
+    <Button
+        android:id="@+id/button_search_recipes"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="Find Recipes"
+        android:textSize="16sp"
+        android:layout_marginBottom="16dp"
+        android:textColor="#012B13"
+        android:backgroundTint="#14F25C" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Pantry"
-                android:textColor="#A6B8AD"
-                android:textSize="10sp" />
-        </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progressBar_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 
-
-
-        <LinearLayout
-            android:id="@+id/navStats"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#A6B8AD" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Stats"
-                android:textColor="#A6B8AD"
-                android:textSize="10sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/navRecipes"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:src="@android:drawable/ic_menu_edit"
-                app:tint="#14F25C" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="3dp"
-                android:text="Recipes"
-                android:textColor="#14F25C"
-                android:textSize="10sp" />
-        </LinearLayout>
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_recipes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp" />
 
 </LinearLayout>
