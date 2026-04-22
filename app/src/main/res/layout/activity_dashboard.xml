@@ -114,11 +114,10 @@
                             android:layout_width="126dp"
                             android:layout_height="126dp">
 
-                            <ImageView
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/pieChartStatus"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="fitCenter"
-                                android:src="@drawable/ic_donut_chart_mock" />
+                                android:layout_height="match_parent" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -314,6 +313,8 @@
                         </LinearLayout>
 
                         <ProgressBar
+                            android:id="@+id/progressUsageRate"
+                            style="?android:attr/progressBarStyleHorizontal"
                             android:layout_width="match_parent"
                             android:layout_height="8dp"
                             android:layout_marginTop="12dp"
