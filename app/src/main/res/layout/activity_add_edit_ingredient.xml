@@ -245,13 +245,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:weightSum="1">
+            android:weightSum="2">
 
             <!-- Quantity -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -262,8 +263,8 @@
                     android:textSize="13sp" />
 
                 <LinearLayout
-                    android:layout_width="112dp"
-                    android:layout_height="46dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_quantity_container"
                     android:gravity="center_vertical"
@@ -319,8 +320,8 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -332,7 +333,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="46dp"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_rounded"
                     android:gravity="center_vertical">

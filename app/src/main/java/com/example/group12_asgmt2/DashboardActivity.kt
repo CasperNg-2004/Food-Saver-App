@@ -196,9 +196,30 @@ class DashboardActivity : AppCompatActivity() {
                     DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
                 }
 
-                val wastedCost = ingredients.filter {
-                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
-                }.sumOf { it.price }
+                val now = java.time.LocalDate.now()
+                val oneWeekAgo = now.minusDays(7)
+                val twoWeeksAgo = now.minusDays(14)
+
+                var currentWeekWaste = 0.0
+                var lastWeekWaste = 0.0
+
+                ingredients.forEach {
+                    if (DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED) {
+                        // Try to parse createdAt, fallback to expiryDate if createdAt is null or invalid
+                        val dateString = it.createdAt?.take(10) ?: it.expiryDate
+                        try {
+                            val entryDate = java.time.LocalDate.parse(dateString)
+                            if (!entryDate.isBefore(oneWeekAgo)) {
+                                currentWeekWaste += it.price
+                            } else if (entryDate.isBefore(oneWeekAgo) && !entryDate.isBefore(twoWeeksAgo)) {
+                                lastWeekWaste += it.price
+                            }
+                        } catch (e: Exception) {
+                            // If parsing fails, just add to current waste to be safe
+                            currentWeekWaste += it.price
+                        }
+                    }
+                }
 
                 val usagePercent = if (totalItems > 0) {
                     ((totalItems - expiredCount) * 100) / totalItems
@@ -215,7 +236,16 @@ class DashboardActivity : AppCompatActivity() {
                     tvUsageRate.text = "$usagePercent%"
                     progressUsageRate.progress = usagePercent
                     tvDiscardRate.text = "$discardPercent% Discarded"
-                    tvWastedCost.text = String.format("$%.2f", wastedCost)
+                    tvWastedCost.text = String.format("$%.2f", currentWeekWaste)
+                    
+                    val difference = currentWeekWaste - lastWeekWaste
+                    if (difference <= 0) {
+                        tvWeeklySaved.text = String.format("-$%.2f vs last week", kotlin.math.abs(difference))
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+                    } else {
+                        tvWeeklySaved.text = String.format("+$%.2f vs last week", difference)
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#FF4B4B"))
+                    }
                     
                     updatePieChart(freshCount, nearExpiryCount, expiredCount)
                 }
