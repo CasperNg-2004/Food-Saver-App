@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -10,22 +12,46 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Group12_Asgmt2">
-        <!-- Dashboard (Main Page) -->
+        android:theme="@style/Theme.MobileGroup">
+
+        <!-- Dashboard (Main Page / Launcher) -->
         <activity
             android:name=".DashboardActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- Add Food Page -->
+        <!-- Recipe Search Page -->
         <activity
-            android:name=".AddFoodActivity"
+            android:name=".MainActivity"
             android:exported="false" />
+
+        <!-- Recipe Detail Page -->
+        <activity
+            android:name=".RecipeDetailActivity"
+            android:exported="false" />
+
+
+
+        <!-- Statistics Page -->
+        <activity
+            android:name=".StatisticsActivity"
+            android:exported="false" />
+
+        <!-- Inventory Page -->
+        <activity
+            android:name=".InventoryActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Add/Edit Inventory Item Page -->
+        <activity
+            android:name=".AddEditIngredientActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
 
     </application>
 

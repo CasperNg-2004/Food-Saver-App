@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- ── Dark Green Backgrounds (matches dashboard) ── -->
+    <color name="background">#0F1C0F</color>
+    <color name="surface">#1A2E1A</color>
+    <color name="surface_elevated">#1F3520</color>
+    <color name="divider">#2A3D2A</color>
+    <color name="green_dim">#2D4A2D</color>
+
+    <!-- ── Accent (bright neon green from dashboard) ── -->
+    <color name="green_primary">#4ADE80</color>
+    <color name="green_button">#22C55E</color>
+    <color name="green_dark">#166534</color>
+
+    <!-- ── Text ── -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#86EFAC</color>
+    <color name="text_hint">#4D7A4D</color>
+
+    <!-- ── Expiry Status ── -->
+    <color name="expiry_expired">#F87171</color>
+    <color name="expiry_soon">#FBBF24</color>
+    <color name="expiry_fresh">#4ADE80</color>
+
+    <!-- ── Category Badges (vibrant on dark background) ── -->
+    <color name="category_protein">#F87171</color>
+    <color name="category_vitamin">#FB923C</color>
+    <color name="category_dairy">#60A5FA</color>
+    <color name="category_grain">#A78BFA</color>
+    <color name="category_vegetable">#4ADE80</color>
+    <color name="category_fruit">#F472B6</color>
+    <color name="category_spice">#FCD34D</color>
+    <color name="category_other">#94A3B8</color>
+
+    <!-- ── Launcher ── -->
+    <color name="ic_launcher_background">#166534</color>
 </resources>

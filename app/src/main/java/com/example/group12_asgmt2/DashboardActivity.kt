@@ -2,17 +2,30 @@ package com.example.group12_asgmt2
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.example.group12_asgmt2.Recipe
+import com.github.mikephil.charting.data.PieEntry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class DashboardActivity : AppCompatActivity() {
 
+    private lateinit var tvGreeting: TextView
     private lateinit var tvKitchenName: TextView
     private lateinit var tvTotalItems: TextView
     private lateinit var tvFreshCount: TextView
@@ -23,6 +36,9 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var tvWastedCost: TextView
     private lateinit var tvWeeklySaved: TextView
 
+    private lateinit var progressUsageRate: ProgressBar
+    private lateinit var pieChartStatus: PieChart
+
     private lateinit var btnNotification: ImageView
     private lateinit var btnQuickAdd: LinearLayout
     private lateinit var btnSeeAllInventory: TextView
@@ -30,8 +46,8 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var navHome: LinearLayout
     private lateinit var navPantry: LinearLayout
-    private lateinit var navScan: LinearLayout
-    private lateinit var navShop: LinearLayout
+
+    private lateinit var navStats: LinearLayout
     private lateinit var navRecipes: LinearLayout
 
     private lateinit var recyclerRecipes: RecyclerView
@@ -41,12 +57,32 @@ class DashboardActivity : AppCompatActivity() {
         setContentView(R.layout.activity_dashboard)
 
         bindViews()
-        loadMockDashboardData()
+        updateGreeting()
+        loadStaticDashboardFields()
         setupRecipeList()
         setupClickListeners()
     }
 
+    private fun updateGreeting() {
+        val calendar = java.util.Calendar.getInstance()
+        val hour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+
+        val greeting = when (hour) {
+            in 0..11 -> "Good Morning,"
+            in 12..16 -> "Good Afternoon,"
+            else -> "Good Evening,"
+        }
+        tvGreeting.text = greeting
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadDashboardDataFromSupabase()
+        loadProfileFromSupabase()
+    }
+
     private fun bindViews() {
+        tvGreeting = findViewById(R.id.tvGreeting)
         tvKitchenName = findViewById(R.id.tvKitchenName)
         tvTotalItems = findViewById(R.id.tvTotalItems)
         tvFreshCount = findViewById(R.id.tvFreshCount)
@@ -57,6 +93,10 @@ class DashboardActivity : AppCompatActivity() {
         tvWastedCost = findViewById(R.id.tvWastedCost)
         tvWeeklySaved = findViewById(R.id.tvWeeklySaved)
 
+        progressUsageRate = findViewById(R.id.progressUsageRate)
+        pieChartStatus = findViewById(R.id.pieChartStatus)
+        setupPieChart()
+
         btnNotification = findViewById(R.id.btnNotification)
         btnQuickAdd = findViewById(R.id.btnQuickAdd)
         btnSeeAllInventory = findViewById(R.id.btnSeeAllInventory)
@@ -64,107 +104,353 @@ class DashboardActivity : AppCompatActivity() {
 
         navHome = findViewById(R.id.navHome)
         navPantry = findViewById(R.id.navPantry)
-        navScan = findViewById(R.id.navScan)
-        navShop = findViewById(R.id.navShop)
+
+        navStats = findViewById(R.id.navStats)
         navRecipes = findViewById(R.id.navRecipes)
 
         recyclerRecipes = findViewById(R.id.recyclerRecipes)
     }
 
-    private fun loadMockDashboardData() {
-        val summary = DashboardSummary(
-            kitchenName = "Alex's Kitchen",
-            totalItems = 42,
-            freshCount = 28,
-            nearExpiryCount = 10,
-            expiredCount = 4,
-            usageRate = 85,
-            discardRate = 15,
-            wastedCost = 12.50,
-            weeklySaved = 2.00
-        )
+    private fun loadStaticDashboardFields() {
+        // Mock historical data for now
+        tvWeeklySaved.text = "$42.50 vs last week"
+        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+    }
 
-        tvKitchenName.text = summary.kitchenName
-        tvTotalItems.text = summary.totalItems.toString()
-        tvFreshCount.text = summary.freshCount.toString()
-        tvNearExpiryCount.text = summary.nearExpiryCount.toString()
-        tvExpiredCount.text = summary.expiredCount.toString()
-        tvUsageRate.text = "${summary.usageRate}%"
-        tvDiscardRate.text = "${summary.discardRate}% Discarded"
-        tvWastedCost.text = "$${String.format("%.2f", summary.wastedCost)}"
-        tvWeeklySaved.text = "-$${String.format("%.2f", summary.weeklySaved)} vs last week"
+    private fun loadProfileFromSupabase() {
+        val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+        val profileId = sharedPref.getString("current_profile_id", null)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val profile = if (profileId != null) {
+                    ProfileRepository.getById(profileId)
+                } else {
+                    // If no ID stored, just get the first one available as a default
+                    ProfileRepository.getAll().firstOrNull()
+                }
+
+                withContext(Dispatchers.Main) {
+                    if (profile != null) {
+                        tvKitchenName.text = "${profile.kitchenName}'s Kitchen"
+                        // Save ID if it wasn't there
+                        if (profileId == null) {
+                            sharedPref.edit().putString("current_profile_id", profile.id).apply()
+                        }
+                    } else {
+                        tvKitchenName.text = "Alex's Kitchen"
+                    }
+                }
+            } catch (e: Exception) {
+                // Fallback
+            }
+        }
+    }
+
+    private fun setupPieChart() {
+        pieChartStatus.description.isEnabled = false
+        pieChartStatus.legend.isEnabled = false
+        pieChartStatus.isDrawHoleEnabled = true
+        pieChartStatus.setHoleColor(android.graphics.Color.TRANSPARENT)
+        pieChartStatus.setDrawEntryLabels(false)
+        pieChartStatus.setTouchEnabled(false)
+    }
+
+    private fun updatePieChart(fresh: Int, near: Int, expired: Int) {
+        val entries = ArrayList<PieEntry>()
+        
+        // Only add entries if count > 0 to avoid visual glitches
+        if (fresh > 0) entries.add(PieEntry(fresh.toFloat(), "Fresh"))
+        if (near > 0) entries.add(PieEntry(near.toFloat(), "Near Expiry"))
+        if (expired > 0) entries.add(PieEntry(expired.toFloat(), "Expired"))
+
+        val dataSet = PieDataSet(entries, "Inventory Status")
+        
+        // Match the dot colors in your layout
+        dataSet.colors = listOf(
+            android.graphics.Color.parseColor("#14F25C"), // Fresh (Green)
+            android.graphics.Color.parseColor("#FFD700"), // Near Expiry (Yellow/Gold)
+            android.graphics.Color.parseColor("#FF4B4B")  // Expired (Red)
+        )
+        
+        dataSet.setDrawValues(false)
+        
+        val data = PieData(dataSet)
+        pieChartStatus.data = data
+        pieChartStatus.invalidate()
+    }
+
+    private fun loadDashboardDataFromSupabase() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val ingredients = IngredientRepository.getAll()
+
+                val totalItems = ingredients.size
+                val freshCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.FRESH
+                }
+                val nearExpiryCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.SOON
+                }
+                val expiredCount = ingredients.count {
+                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
+                }
+
+                val now = java.time.LocalDate.now()
+                val oneWeekAgo = now.minusDays(7)
+                val twoWeeksAgo = now.minusDays(14)
+
+                var currentWeekWaste = 0.0
+                var lastWeekWaste = 0.0
+
+                ingredients.forEach {
+                    if (DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED) {
+                        // Try to parse createdAt, fallback to expiryDate if createdAt is null or invalid
+                        val dateString = it.createdAt?.take(10) ?: it.expiryDate
+                        try {
+                            val entryDate = java.time.LocalDate.parse(dateString)
+                            if (!entryDate.isBefore(oneWeekAgo)) {
+                                currentWeekWaste += it.price
+                            } else if (entryDate.isBefore(oneWeekAgo) && !entryDate.isBefore(twoWeeksAgo)) {
+                                lastWeekWaste += it.price
+                            }
+                        } catch (e: Exception) {
+                            // If parsing fails, just add to current waste to be safe
+                            currentWeekWaste += it.price
+                        }
+                    }
+                }
+
+                val usagePercent = if (totalItems > 0) {
+                    ((totalItems - expiredCount) * 100) / totalItems
+                } else 0
+
+                val discardPercent = if (totalItems > 0) 100 - usagePercent else 0
+
+                withContext(Dispatchers.Main) {
+                    tvTotalItems.text = totalItems.toString()
+                    tvFreshCount.text = freshCount.toString()
+                    tvNearExpiryCount.text = nearExpiryCount.toString()
+                    tvExpiredCount.text = expiredCount.toString()
+                    
+                    tvUsageRate.text = "$usagePercent%"
+                    
+                    android.animation.ObjectAnimator.ofInt(progressUsageRate, "progress", 0, usagePercent).apply {
+                        duration = 1000 // 1 second animation
+                        start()
+                    }
+                    
+                    tvDiscardRate.text = "$discardPercent% Discarded"
+                    tvWastedCost.text = String.format("$%.2f", currentWeekWaste)
+                    
+                    val difference = currentWeekWaste - lastWeekWaste
+                    if (difference <= 0) {
+                        tvWeeklySaved.text = String.format("$%.2f less waste vs last week", kotlin.math.abs(difference))
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+                    } else {
+                        tvWeeklySaved.text = String.format("$%.2f more waste vs last week", difference)
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#FF4B4B"))
+                    }
+                    
+                    updatePieChart(freshCount, nearExpiryCount, expiredCount)
+                }
+
+                // FETCH REAL RECIPES BASED ON INGREDIENTS
+                if (ingredients.isNotEmpty()) {
+                    val ingredientsListString = ingredients
+                        .filter { DateUtils.getExpiryStatus(it.expiryDate) != DateUtils.ExpiryStatus.EXPIRED }
+                        .take(5)
+                        .joinToString(",") { it.name }
+                    
+                    fetchRecipesFromApi(ingredientsListString)
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@DashboardActivity,
+                        "Failed to load dashboard data: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // fallback values
+                    tvTotalItems.text = "0"
+                    tvFreshCount.text = "0"
+                    tvNearExpiryCount.text = "0"
+                    tvExpiredCount.text = "0"
+                }
+            }
+        }
+    }
+
+    private fun fetchRecipesFromApi(ingredients: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.spoonacular.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(SpoonacularApi::class.java)
+        val apiKey = getString(R.string.api_key)
+
+        apiService.getRecipesByIngredients(ingredients, 10, apiKey).enqueue(object : retrofit2.Callback<List<Recipe>> {
+            override fun onResponse(call: retrofit2.Call<List<Recipe>>, response: retrofit2.Response<List<Recipe>>) {
+                if (response.isSuccessful && response.body() != null) {
+                    val recipes = response.body()!!
+                    setupRecipeRecyclerView(recipes)
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<List<Recipe>>, t: Throwable) {
+                // Silently fail or log
+            }
+        })
+    }
+
+    private fun setupRecipeRecyclerView(recipes: List<Recipe>) {
+        recyclerRecipes.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+
+        recyclerRecipes.adapter = RecipeAdapter(recipes) { recipe ->
+            val intent = Intent(this, RecipeDetailActivity::class.java)
+            intent.putExtra("RECIPE_DATA", recipe)
+            startActivity(intent)
+        }
     }
 
     private fun setupRecipeList() {
-        val mockRecipes = listOf(
-            RecipeItem(
-                title = "Avocado & Spinach Salad",
-                time = "15m",
-                expiryTag = "Spinach (1 day left)",
-                ingredientTag = "Avocado",
-                imageResId = R.drawable.recipe_avocado_salad
-            ),
-            RecipeItem(
-                title = "Spicy Chicken Stir Fry",
-                time = "20m",
-                expiryTag = "Peppers (2 days left)",
-                ingredientTag = "Chicken",
-                imageResId = R.drawable.recipe_spicy_chicken
-            ),
-            RecipeItem(
-                title = "Vegetable Soup",
-                time = "25m",
-                expiryTag = "Carrot (1 day left)",
-                ingredientTag = "Potato",
-                imageResId = R.drawable.recipe_vegetable_soup
-            )
-        )
-
+        // Initial empty state or loading state if needed
         recyclerRecipes.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        recyclerRecipes.adapter = RecipeAdapter(mockRecipes) { recipe ->
-            Toast.makeText(this, "Clicked: ${recipe.title}", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun setupClickListeners() {
         btnNotification.setOnClickListener {
-            Toast.makeText(this, "Notifications clicked", Toast.LENGTH_SHORT).show()
+            showExpiryNotifications()
         }
 
         btnQuickAdd.setOnClickListener {
-            Toast.makeText(this, "Go to Add Item page", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, AddFoodActivity::class.java))
+            startActivity(Intent(this, AddEditIngredientActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {
-            Toast.makeText(this, "View all inventory", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, InventoryActivity::class.java))
+            startActivity(Intent(this, InventoryActivity::class.java))
         }
 
         btnSeeAllRecipes.setOnClickListener {
-            Toast.makeText(this, "View all recipes", Toast.LENGTH_SHORT).show()
-            // startActivity(Intent(this, RecipeActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        tvKitchenName.setOnClickListener {
+            showEditNameDialog()
         }
 
         navHome.setOnClickListener {
-            Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+            // already on dashboard
         }
 
         navPantry.setOnClickListener {
-            Toast.makeText(this, "Pantry", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, InventoryActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
-        navScan.setOnClickListener {
-            Toast.makeText(this, "Scan", Toast.LENGTH_SHORT).show()
-        }
 
-        navShop.setOnClickListener {
-            Toast.makeText(this, "Shop", Toast.LENGTH_SHORT).show()
+
+        navStats.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
         navRecipes.setOnClickListener {
-            Toast.makeText(this, "Recipes", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, MainActivity::class.java))
+            overridePendingTransition(0, 0)
+        }
+    }
+
+    private fun showEditNameDialog() {
+        val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+        val profileId = sharedPref.getString("current_profile_id", null)
+        val currentTitle = tvKitchenName.text.toString().removeSuffix("'s Kitchen")
+
+        val editText = android.widget.EditText(this)
+        editText.setText(currentTitle)
+        editText.setSelection(editText.text.length)
+
+        val padding = (16 * resources.displayMetrics.density).toInt()
+        val container = android.widget.FrameLayout(this)
+        container.addView(editText)
+        editText.setPadding(padding, padding, padding, padding)
+
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Edit Kitchen Name")
+            .setMessage("Enter new kitchen name:")
+            .setView(container)
+            .setPositiveButton("Save") { _, _ ->
+                val newName = editText.text.toString().trim()
+                if (newName.isNotEmpty()) {
+                    updateProfileInSupabase(profileId, newName)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun updateProfileInSupabase(profileId: String?, newName: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                if (profileId != null) {
+                    // Update existing
+                    ProfileRepository.update(profileId, ProfilePayload(username = "User", kitchenName = newName))
+                } else {
+                    // Create new if none exists
+                    val newProfile = ProfileRepository.insert(ProfilePayload(username = "User", kitchenName = newName))
+                    getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
+                        .edit().putString("current_profile_id", newProfile.id).apply()
+                }
+
+                withContext(Dispatchers.Main) {
+                    tvKitchenName.text = "$newName's Kitchen"
+                    Toast.makeText(this@DashboardActivity, "Name updated in database", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DashboardActivity, "Error saving to DB: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun showExpiryNotifications() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val ingredients = IngredientRepository.getAll()
+                val criticalIngredients = ingredients.filter {
+                    val status = DateUtils.getExpiryStatus(it.expiryDate)
+                    status == DateUtils.ExpiryStatus.EXPIRED || status == DateUtils.ExpiryStatus.SOON
+                }
+
+                withContext(Dispatchers.Main) {
+                    if (criticalIngredients.isEmpty()) {
+                        Toast.makeText(this@DashboardActivity, "All items are fresh!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val message = StringBuilder()
+                        criticalIngredients.forEach {
+                            val status = DateUtils.getExpiryStatus(it.expiryDate)
+                            val statusStr = if (status == DateUtils.ExpiryStatus.EXPIRED) "Expired" else "Nearly Expired"
+                            message.append("• ${it.name}: $statusStr\n")
+                        }
+
+                        androidx.appcompat.app.AlertDialog.Builder(this@DashboardActivity)
+                            .setTitle("Expiry Notifications")
+                            .setMessage(message.toString().trim())
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DashboardActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

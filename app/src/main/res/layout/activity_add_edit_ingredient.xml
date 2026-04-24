@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_dashboard"
     android:fillViewport="true"
     android:scrollbars="none">
@@ -11,52 +11,54 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingStart="18dp"
-        android:paddingTop="18dp"
-        android:paddingEnd="18dp"
-        android:paddingBottom="28dp">
+        android:paddingStart="12dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="24dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:minHeight="36dp">
 
             <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
                 android:layout_centerVertical="true"
-                android:src="@android:drawable/ic_media_previous"
+                android:src="@drawable/ic_arrow_back"
                 app:tint="#FFFFFF" />
 
             <TextView
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="Add New Item"
+                android:text="Add Item"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="18dp"
-            android:background="#1C4733" />
+            android:layout_marginTop="14dp"
+            android:background="#1B4A34" />
 
         <LinearLayout
             android:id="@+id/btnAddPhoto"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/bg_add_photo_circle"
             android:gravity="center"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@android:drawable/ic_menu_camera"
                 app:tint="#19F25B" />
 
@@ -66,7 +68,7 @@
                 android:layout_marginTop="6dp"
                 android:text="Add Photo"
                 android:textColor="#19F25B"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <TextView
@@ -75,11 +77,11 @@
             android:layout_marginTop="22dp"
             android:text="Item Name"
             android:textColor="#D9E8DE"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="50dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_input_rounded"
             android:gravity="center_vertical"
@@ -96,11 +98,11 @@
                 android:hint="e.g. Organic Milk"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#7D9A8A"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
                 android:src="@android:drawable/ic_menu_edit"
                 app:tint="#A8B8AF" />
         </LinearLayout>
@@ -108,24 +110,41 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:text="Category"
             android:textColor="#D9E8DE"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
-        <Spinner
-            android:id="@+id/spinnerCategory"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="50dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/bg_input_rounded"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp" />
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:paddingStart="12dp"
+                android:paddingEnd="36dp"
+                android:spinnerMode="dropdown" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="14dp"
+                android:src="@android:drawable/arrow_down_float"
+                app:tint="#A8B8AF" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -133,7 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="6dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -141,11 +160,11 @@
                     android:layout_height="wrap_content"
                     android:text="Purchase Date"
                     android:textColor="#D9E8DE"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_rounded"
                     android:gravity="center_vertical"
@@ -163,11 +182,12 @@
                         android:focusable="false"
                         android:hint="mm/dd/yyyy"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#7D9A8A" />
+                        android:textColorHint="#7D9A8A"
+                        android:textSize="14sp" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@android:drawable/ic_menu_my_calendar"
                         app:tint="#A8B8AF" />
                 </LinearLayout>
@@ -177,7 +197,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -185,11 +205,11 @@
                     android:layout_height="wrap_content"
                     android:text="Expiry Date"
                     android:textColor="#D9E8DE"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
+                    android:layout_height="50dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_input_rounded"
                     android:gravity="center_vertical"
@@ -207,89 +227,200 @@
                         android:focusable="false"
                         android:hint="mm/dd/yyyy"
                         android:textColor="#FFFFFF"
-                        android:textColorHint="#7D9A8A" />
+                        android:textColorHint="#7D9A8A"
+                        android:textSize="14sp" />
 
                     <ImageView
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
                         android:src="@android:drawable/ic_menu_my_calendar"
                         app:tint="#A8B8AF" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:text="Quantity"
-            android:textColor="#D9E8DE"
-            android:textSize="14sp" />
-
+        <!-- QUANTITY and UNIT -->
         <LinearLayout
-            android:layout_width="130dp"
-            android:layout_height="56dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/bg_quantity_container"
-            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:weightSum="2">
 
-            <Button
-                android:id="@+id/btnMinus"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="@drawable/bg_quantity_minus"
-                android:text="-"
-                android:textColor="#DCE9E0"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/tvQuantity"
+            <!-- Quantity -->
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:layout_marginEnd="6dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btnPlus"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
-                android:background="@drawable/bg_quantity_plus"
-                android:text="+"
-                android:textColor="#032611"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Quantity"
+                    android:textColor="#D9E8DE"
+                    android:textSize="13sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_quantity_container"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnMinus"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/bg_quantity_minus"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        android:text="-"
+                        android:textAllCaps="false"
+                        android:textColor="#DCE9E0"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvQuantity"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="1.0"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnPlus"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/bg_quantity_plus"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:padding="0dp"
+                        android:text="+"
+                        android:textAllCaps="false"
+                        android:textColor="#032611"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Unit -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Unit"
+                    android:textColor="#D9E8DE"
+                    android:textSize="13sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:gravity="center_vertical">
+
+                    <Spinner
+                        android:id="@+id/spinnerUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/transparent"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="36dp"
+                        android:spinnerMode="dropdown" />
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="14dp"
+                        android:src="@android:drawable/arrow_down_float"
+                        app:tint="#A8B8AF" />
+                </RelativeLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- PRICE -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Total Price ($)"
+            android:textColor="#D9E8DE"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_rounded"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etPrice"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="0.00"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#7D9A8A"
+                android:inputType="numberDecimal"
+                android:textSize="14sp" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="18dp"
             android:background="#1C4733" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageView
-                android:layout_width="28dp"
-                android:layout_height="28dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@android:drawable/ic_lock_idle_alarm"
                 app:tint="#19F25B" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
@@ -298,7 +429,7 @@
                     android:layout_height="wrap_content"
                     android:text="Expiry Alert"
                     android:textColor="#FFFFFF"
-                    android:textSize="17sp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -306,23 +437,25 @@
                     android:layout_height="wrap_content"
                     android:text="Notify 2 days before"
                     android:textColor="#7D9A8A"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
 
             <Switch
                 android:id="@+id/switchExpiryAlert"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true" />
+                android:checked="true"
+                android:thumbTint="#FFFFFF"
+                android:trackTint="#19F25B" />
         </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
+            android:layout_marginTop="20dp"
             android:text="Quick Tags"
             android:textColor="#D9E8DE"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -341,67 +474,69 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_tag_selected"
                     android:paddingStart="14dp"
-                    android:paddingTop="8dp"
+                    android:paddingTop="7dp"
                     android:paddingEnd="14dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="7dp"
                     android:text="Fresh"
                     android:textColor="#FFFFFF"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tagFrozen"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_tag_unselected"
                     android:paddingStart="14dp"
-                    android:paddingTop="8dp"
+                    android:paddingTop="7dp"
                     android:paddingEnd="14dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="7dp"
                     android:text="Frozen"
                     android:textColor="#7D9A8A"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tagCanned"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_tag_unselected"
                     android:paddingStart="14dp"
-                    android:paddingTop="8dp"
+                    android:paddingTop="7dp"
                     android:paddingEnd="14dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="7dp"
                     android:text="Canned"
                     android:textColor="#7D9A8A"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tagOpened"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_tag_unselected"
                     android:paddingStart="14dp"
-                    android:paddingTop="8dp"
+                    android:paddingTop="7dp"
                     android:paddingEnd="14dp"
-                    android:paddingBottom="8dp"
+                    android:paddingBottom="7dp"
                     android:text="Opened"
                     android:textColor="#7D9A8A"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
         </HorizontalScrollView>
 
-        <Button
-            android:id="@+id/btnSaveInventory"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSave"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
-            android:layout_marginTop="28dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="26dp"
             android:background="@drawable/bg_quick_add"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:text="Save to Inventory"
             android:textAllCaps="false"
             android:textColor="#022710"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:textStyle="bold" />
 
     </LinearLayout>

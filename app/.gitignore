@@ -1,1 +1,19 @@
+<<<<<<< HEAD
 /build
+=======
+# Android Studio / IntelliJ files
+.idea/
+.gradle/
+*.iml
+local.properties
+
+# Build folders
+build/
+app/build/
+
+# Log files
+*.log
+
+# System files
+.DS_Store
+>>>>>>> origin/sucmadic

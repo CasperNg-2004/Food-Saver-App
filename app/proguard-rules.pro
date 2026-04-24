@@ -1,4 +1,9 @@
 # Add project specific ProGuard rules here.
+-keep class io.github.jan.supabase.** { *; }
+-keep class io.ktor.** { *; }
+-keep class kotlinx.serialization.** { *; }
+-keepattributes *Annotation*
+-keepattributes Signature
 # You can control the set of applied configuration files using the
 # proguardFiles setting in build.gradle.
 #
