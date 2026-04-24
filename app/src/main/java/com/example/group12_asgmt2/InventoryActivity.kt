@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.example.group12_asgmt2.databinding.ActivityInventoryBinding
 import kotlinx.coroutines.launch
-
+//Hello World
 class InventoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityInventoryBinding
@@ -30,6 +30,10 @@ class InventoryActivity : AppCompatActivity() {
         const val EXTRA_UNIT     = "ingredient_unit"
         const val EXTRA_PRICE    = "ingredient_price"
         const val EXTRA_EXPIRY   = "ingredient_expiry"
+        const val EXTRA_PURCHASE = "ingredient_purchase"
+        const val EXTRA_ALERT    = "ingredient_alert"
+        const val EXTRA_QUICK_TAG= "ingredient_quick_tag"
+        const val EXTRA_PHOTO_URL= "ingredient_photo_url"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,11 +41,14 @@ class InventoryActivity : AppCompatActivity() {
         binding = ActivityInventoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        // Header Title (optional dynamic setting, but already set in XML)
+        // binding.tvGreeting.text = "Inventory"
+        // binding.tvKitchenName.text = "My Pantry"
 
         setupRecyclerView()
         setupCategoryChips()
         setupSwipeRefresh()
+        setupBottomNavigation()
 
         binding.fabAdd.setOnClickListener {
             startActivityForResult(
@@ -65,6 +72,10 @@ class InventoryActivity : AppCompatActivity() {
                     putExtra(EXTRA_UNIT,     ingredient.unit)
                     putExtra(EXTRA_PRICE,    ingredient.price)
                     putExtra(EXTRA_EXPIRY,   ingredient.expiryDate)
+                    putExtra(EXTRA_PURCHASE, ingredient.purchaseDate)
+                    putExtra(EXTRA_ALERT,    ingredient.alertEnabled ?: true)
+                    putExtra(EXTRA_QUICK_TAG,ingredient.quickTag)
+                    putExtra(EXTRA_PHOTO_URL,ingredient.photoUrl)
                 }
                 startActivityForResult(intent, REQUEST_CODE_ADD_EDIT)
             },
@@ -162,6 +173,38 @@ class InventoryActivity : AppCompatActivity() {
 
     private fun showLoading(loading: Boolean) {
         binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
+    }
+
+    private fun setupBottomNavigation() {
+        binding.navHome.setOnClickListener {
+            // Dashboard is likely the main entry, so we just finish this to go back or start Dashboard
+            val intent = Intent(this, DashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        }
+
+        binding.navPantry.setOnClickListener {
+            // Already here
+        }
+
+        binding.navScan.setOnClickListener {
+            Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.navStats.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
+            finish()
+        }
+
+        binding.navRecipes.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
+        
+        binding.btnNotification.setOnClickListener {
+             Toast.makeText(this, "Notifications clicked", Toast.LENGTH_SHORT).show()
+        }
     }
 
     @Suppress("OVERRIDE_DEPRECATION")

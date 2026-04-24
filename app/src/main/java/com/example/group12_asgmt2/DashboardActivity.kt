@@ -171,7 +171,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         btnQuickAdd.setOnClickListener {
-            startActivity(Intent(this, AddFoodActivity::class.java))
+            startActivity(Intent(this, AddEditIngredientActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {

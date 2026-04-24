@@ -1,64 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:background="#101813"
-    tools:context=".MainActivity">
+    android:padding="16dp"
+    android:background="@color/background">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Smart Food Saver"
-        android:textSize="28sp"
+        android:text="Find Recipes"
+        android:textColor="@color/text_primary"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Enter the ingredients you want to use up, separated by commas."
-        android:textSize="14sp"
-        android:textColor="#A6B8AD"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="16dp"/>
 
     <EditText
         android:id="@+id/editText_ingredients"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#1A241B"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#A6B8AD"
-        android:hint="e.g., chicken, rice, carrots"
-        android:padding="12dp"
-        android:inputType="text"
-        android:layout_marginBottom="16dp" />
+        android:layout_height="wrap_content"
+        android:hint="Enter ingredients (e.g. apple, flour)"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_hint"
+        android:backgroundTint="@color/green_primary"/>
 
     <Button
         android:id="@+id/button_search_recipes"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Find Recipes"
-        android:textSize="16sp"
-        android:layout_marginBottom="16dp"
-        android:textColor="#012B13"
-        android:backgroundTint="#14F25C" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Search Recipes"
+        android:backgroundTint="@color/green_primary"
+        android:textColor="@color/background"/>
 
     <ProgressBar
         android:id="@+id/progressBar_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:indeterminateTint="@color/green_primary"
+        android:layout_marginTop="16dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView_recipes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp"/>
 
 </LinearLayout>
