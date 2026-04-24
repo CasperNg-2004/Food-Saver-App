@@ -1,45 +1,33 @@
 package com.example.group12_asgmt2
 
-import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.query.Columns
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object ProfileRepository {
+    private val table = SupabaseManager.client.postgrest["profiles"]
 
-    private val supabase = SupabaseManager.client
-    private const val TABLE = "profiles"
-
-    /** Fetch all profiles. */
-    suspend fun getAll(): List<Profile> {
-        return supabase.from(TABLE)
-            .select()
-            .decodeList<Profile>()
+    suspend fun getAll(): List<Profile> = withContext(Dispatchers.IO) {
+        table.select(Columns.ALL).decodeList<Profile>()
     }
 
-    /** Fetch a profile by id. */
-    suspend fun getById(id: String): Profile? {
-        return try {
-            supabase.from(TABLE)
-                .select {
-                    filter { eq("id", id) }
-                }
-                .decodeSingle<Profile>()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    /** Insert a new profile. */
-    suspend fun insert(payload: ProfilePayload): Profile {
-        return supabase.from(TABLE)
-            .insert(payload) {
-                select()
-            }
-            .decodeSingle<Profile>()
-    }
-
-    /** Update an existing profile. */
-    suspend fun update(id: String, payload: ProfilePayload) {
-        supabase.from(TABLE).update(payload) {
+    suspend fun getById(id: String): Profile? = withContext(Dispatchers.IO) {
+        table.select(Columns.ALL) {
             filter { eq("id", id) }
-        }
+        }.decodeSingleOrNull<Profile>()
+    }
+
+    suspend fun insert(payload: ProfilePayload): Profile = withContext(Dispatchers.IO) {
+        table.insert(payload) {
+            select() // Return the inserted row so we can get the generated id
+        }.decodeSingle<Profile>()
+    }
+
+    suspend fun update(id: String, payload: ProfilePayload): Profile = withContext(Dispatchers.IO) {
+        table.update(payload) {
+            filter { eq("id", id) }
+            select() // Return the updated row
+        }.decodeSingle<Profile>()
     }
 }

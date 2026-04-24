@@ -10,12 +10,9 @@ import kotlinx.serialization.Serializable
 data class Profile(
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     val id: String? = null,
-
     val username: String,
-
     @SerialName("kitchen_name")
     val kitchenName: String,
-
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     @SerialName("created_at")
     val createdAt: String? = null

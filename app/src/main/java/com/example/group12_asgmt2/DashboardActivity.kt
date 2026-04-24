@@ -46,7 +46,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var navHome: LinearLayout
     private lateinit var navPantry: LinearLayout
-    private lateinit var navScan: LinearLayout
+
     private lateinit var navStats: LinearLayout
     private lateinit var navRecipes: LinearLayout
 
@@ -104,7 +104,7 @@ class DashboardActivity : AppCompatActivity() {
 
         navHome = findViewById(R.id.navHome)
         navPantry = findViewById(R.id.navPantry)
-//        navScan = findViewById(R.id.navScan)
+
         navStats = findViewById(R.id.navStats)
         navRecipes = findViewById(R.id.navRecipes)
 
@@ -196,9 +196,30 @@ class DashboardActivity : AppCompatActivity() {
                     DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
                 }
 
-                val wastedCost = ingredients.filter {
-                    DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED
-                }.sumOf { it.price }
+                val now = java.time.LocalDate.now()
+                val oneWeekAgo = now.minusDays(7)
+                val twoWeeksAgo = now.minusDays(14)
+
+                var currentWeekWaste = 0.0
+                var lastWeekWaste = 0.0
+
+                ingredients.forEach {
+                    if (DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED) {
+                        // Try to parse createdAt, fallback to expiryDate if createdAt is null or invalid
+                        val dateString = it.createdAt?.take(10) ?: it.expiryDate
+                        try {
+                            val entryDate = java.time.LocalDate.parse(dateString)
+                            if (!entryDate.isBefore(oneWeekAgo)) {
+                                currentWeekWaste += it.price
+                            } else if (entryDate.isBefore(oneWeekAgo) && !entryDate.isBefore(twoWeeksAgo)) {
+                                lastWeekWaste += it.price
+                            }
+                        } catch (e: Exception) {
+                            // If parsing fails, just add to current waste to be safe
+                            currentWeekWaste += it.price
+                        }
+                    }
+                }
 
                 val usagePercent = if (totalItems > 0) {
                     ((totalItems - expiredCount) * 100) / totalItems
@@ -213,9 +234,23 @@ class DashboardActivity : AppCompatActivity() {
                     tvExpiredCount.text = expiredCount.toString()
                     
                     tvUsageRate.text = "$usagePercent%"
-                    progressUsageRate.progress = usagePercent
+                    
+                    android.animation.ObjectAnimator.ofInt(progressUsageRate, "progress", 0, usagePercent).apply {
+                        duration = 1000 // 1 second animation
+                        start()
+                    }
+                    
                     tvDiscardRate.text = "$discardPercent% Discarded"
-                    tvWastedCost.text = String.format("$%.2f", wastedCost)
+                    tvWastedCost.text = String.format("$%.2f", currentWeekWaste)
+                    
+                    val difference = currentWeekWaste - lastWeekWaste
+                    if (difference <= 0) {
+                        tvWeeklySaved.text = String.format("$%.2f less waste vs last week", kotlin.math.abs(difference))
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+                    } else {
+                        tvWeeklySaved.text = String.format("$%.2f more waste vs last week", difference)
+                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#FF4B4B"))
+                    }
                     
                     updatePieChart(freshCount, nearExpiryCount, expiredCount)
                 }
@@ -294,7 +329,7 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         btnQuickAdd.setOnClickListener {
-            startActivity(Intent(this, AddFoodActivity::class.java))
+            startActivity(Intent(this, AddEditIngredientActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {
@@ -315,20 +350,19 @@ class DashboardActivity : AppCompatActivity() {
 
         navPantry.setOnClickListener {
             startActivity(Intent(this, InventoryActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
-        /*
-        navScan.setOnClickListener {
-            Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
-        }
-        */
+
 
         navStats.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))
+            overridePendingTransition(0, 0)
         }
 
         navRecipes.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
+            overridePendingTransition(0, 0)
         }
     }
 
