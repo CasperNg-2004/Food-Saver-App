@@ -188,9 +188,7 @@ class InventoryActivity : AppCompatActivity() {
             // Already here
         }
 
-        binding.navScan.setOnClickListener {
-            Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
-        }
+
 
         binding.navStats.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))

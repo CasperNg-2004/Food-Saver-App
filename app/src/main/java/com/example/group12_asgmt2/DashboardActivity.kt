@@ -46,7 +46,7 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var navHome: LinearLayout
     private lateinit var navPantry: LinearLayout
-    private lateinit var navScan: LinearLayout
+
     private lateinit var navStats: LinearLayout
     private lateinit var navRecipes: LinearLayout
 
@@ -104,7 +104,7 @@ class DashboardActivity : AppCompatActivity() {
 
         navHome = findViewById(R.id.navHome)
         navPantry = findViewById(R.id.navPantry)
-        navScan = findViewById(R.id.navScan)
+
         navStats = findViewById(R.id.navStats)
         navRecipes = findViewById(R.id.navRecipes)
 
@@ -234,7 +234,12 @@ class DashboardActivity : AppCompatActivity() {
                     tvExpiredCount.text = expiredCount.toString()
                     
                     tvUsageRate.text = "$usagePercent%"
-                    progressUsageRate.progress = usagePercent
+                    
+                    android.animation.ObjectAnimator.ofInt(progressUsageRate, "progress", 0, usagePercent).apply {
+                        duration = 1000 // 1 second animation
+                        start()
+                    }
+                    
                     tvDiscardRate.text = "$discardPercent% Discarded"
                     tvWastedCost.text = String.format("$%.2f", currentWeekWaste)
                     
@@ -347,9 +352,7 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, InventoryActivity::class.java))
         }
 
-        navScan.setOnClickListener {
-            Toast.makeText(this, "Scan feature can be added later", Toast.LENGTH_SHORT).show()
-        }
+
 
         navStats.setOnClickListener {
             startActivity(Intent(this, StatisticsActivity::class.java))

@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout navHome;
     private LinearLayout navPantry;
-    private LinearLayout navScan;
+
     private LinearLayout navStats;
     private LinearLayout navRecipes;
 
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         navHome = findViewById(R.id.navHome);
         navPantry = findViewById(R.id.navPantry);
-        navScan = findViewById(R.id.navScan);
+
         navStats = findViewById(R.id.navStats);
         navRecipes = findViewById(R.id.navRecipes);
 
@@ -89,9 +89,7 @@ public class MainActivity extends AppCompatActivity {
             intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         });
-        navScan.setOnClickListener(v -> {
-            Toast.makeText(MainActivity.this, "Scan feature can be added later", Toast.LENGTH_SHORT).show();
-        });
+
         navStats.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(MainActivity.this, StatisticsActivity.class);
             intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
