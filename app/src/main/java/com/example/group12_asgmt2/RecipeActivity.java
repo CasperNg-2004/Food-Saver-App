@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +55,37 @@ public class RecipeActivity extends AppCompatActivity {
                 .build();
         apiService = retrofit.create(SpoonacularApi.class);
 
-
+        setupBottomNavigation();
         loadPantryIngredients();
+    }
+
+    private void setupBottomNavigation() {
+        LinearLayout navHome    = findViewById(R.id.navHome);
+        LinearLayout navPantry  = findViewById(R.id.navPantry);
+        LinearLayout navStats   = findViewById(R.id.navStats);
+        LinearLayout navRecipes = findViewById(R.id.navRecipes);
+
+        navHome.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, DashboardActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+        navPantry.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, InventoryActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+        navStats.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, StatisticsActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+        navRecipes.setOnClickListener(v -> {
+            // Already here
+        });
     }
 
     private void loadPantryIngredients() {

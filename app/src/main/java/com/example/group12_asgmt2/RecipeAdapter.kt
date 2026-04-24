@@ -11,8 +11,8 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 class RecipeAdapter(
-    private val items: List<RecipeItem>,
-    private val onClick: (RecipeItem) -> Unit
+    private val items: List<Recipe>,
+    private val onClick: (Recipe) -> Unit
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     inner class RecipeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -32,16 +32,16 @@ class RecipeAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val item = items[position]
 
-        // Load image with Glide and rounded corners
+        // Load image URL from API with Glide and rounded corners
         Glide.with(holder.itemView.context)
-            .load(item.imageResId)
+            .load(item.image)
             .transform(CenterCrop(), RoundedCorners(16))
             .into(holder.ivRecipe)
 
-        holder.tvTime.text = item.time
+        holder.tvTime.text = "30m"
         holder.tvTitle.text = item.title
-        holder.tvExpiryTag.text = item.expiryTag
-        holder.tvIngredientTag.text = item.ingredientTag
+        holder.tvExpiryTag.text = "${item.usedIngredientCount} items"
+        holder.tvIngredientTag.text = "Missing ${item.missedIngredientCount}"
 
         holder.itemView.setOnClickListener {
             try {
