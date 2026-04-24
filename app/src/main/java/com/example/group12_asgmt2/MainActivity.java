@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recipeRecyclerView;
     private SpoonacularApi apiService;
 
+    private LinearLayout navHome;
+    private LinearLayout navPantry;
+
+    private LinearLayout navStats;
+    private LinearLayout navRecipes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +45,12 @@ public class MainActivity extends AppCompatActivity {
         searchButton = findViewById(R.id.button_search_recipes);
         loadingSpinner = findViewById(R.id.progressBar_loading);
         recipeRecyclerView = findViewById(R.id.recyclerView_recipes);
+
+        navHome = findViewById(R.id.navHome);
+        navPantry = findViewById(R.id.navPantry);
+
+        navStats = findViewById(R.id.navStats);
+        navRecipes = findViewById(R.id.navRecipes);
 
         recipeRecyclerView.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
 
@@ -63,6 +76,30 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please enter some ingredients!", Toast.LENGTH_SHORT).show();
                 }
             }
+        });
+
+        // 5. Navigation Bar Logic
+        navHome.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(MainActivity.this, DashboardActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+        navPantry.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(MainActivity.this, InventoryActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+
+        navStats.setOnClickListener(v -> {
+            android.content.Intent intent = new android.content.Intent(MainActivity.this, StatisticsActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+        navRecipes.setOnClickListener(v -> {
+            // Already here
         });
     }
 

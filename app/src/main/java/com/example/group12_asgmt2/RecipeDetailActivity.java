@@ -77,7 +77,7 @@ public class RecipeDetailActivity extends AppCompatActivity {
                     // Check if Spoonacular actually has instructions for this specific dish
                     String steps = response.body().getInstructions();
                     if (steps != null && !steps.isEmpty()) {
-                        instructionsText.setText(steps);
+                        instructionsText.setText(formatInstructions(steps));
                     } else {
                         instructionsText.setText("No detailed instructions provided by the chef for this dish.");
                     }
@@ -91,5 +91,47 @@ public class RecipeDetailActivity extends AppCompatActivity {
                 instructionsText.setText("Check your internet connection.");
             }
         });
+    }
+
+    private CharSequence formatInstructions(String raw) {
+        if (raw == null || raw.trim().isEmpty()) return "";
+
+        // 1. Replace HTML list tags with a unique delimiter before stripping HTML
+        String text = raw.replace("<li>", "|||").replace("</li>", "|||")
+                         .replace("<ol>", "").replace("</ol>", "")
+                         .replace("<ul>", "").replace("</ul>", "");
+
+        // 2. Strip all remaining HTML (like <br> becomes \n, <b> is removed)
+        String plainText = androidx.core.text.HtmlCompat.fromHtml(text, androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT).toString().trim();
+
+        // 3. Decide how to split the text
+        String[] stepsArray;
+        if (plainText.contains("|||")) {
+            // It had HTML list items, split by our delimiter
+            stepsArray = plainText.split("\\|\\|\\|");
+        } else if (plainText.contains("\n")) {
+            // It had <br> or raw newlines
+            stepsArray = plainText.split("\n+");
+        } else {
+            // It's a solid block of text, split by sentences (period, exclamation, question mark)
+            stepsArray = plainText.split("(?<=[.!?])\\s+");
+        }
+
+        // 4. Build the final numbered string
+        StringBuilder formatted = new StringBuilder();
+        int stepNum = 1;
+        for (String step : stepsArray) {
+            step = step.trim();
+            
+            // Clean up existing numbering or bullets to avoid "1. 1. Do this"
+            step = step.replaceFirst("^\\d+\\.\\s*", ""); // Removes "1. ", "2. ", etc.
+            step = step.replaceFirst("^[•\\-\\*]\\s*", ""); // Removes bullet points
+
+            if (!step.isEmpty() && step.length() > 2) {
+                formatted.append(stepNum).append(". ").append(step).append("\n\n");
+                stepNum++;
+            }
+        }
+        return formatted.toString().trim();
     }
 }

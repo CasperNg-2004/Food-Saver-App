@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
-    <style name="Theme.MobileGroup" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="Theme.MobileGroup" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Colours -->
         <item name="colorPrimary">@color/green_primary</item>
         <item name="colorPrimaryVariant">@color/green_dark</item>
-        <item name="colorOnPrimary">@android:color/white</item>
-        <item name="colorSecondary">@color/green_light</item>
-        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="colorOnPrimary">@color/background</item>
+        <item name="colorSecondary">@color/green_button</item>
+        <item name="colorOnSecondary">@color/background</item>
         <item name="android:colorBackground">@color/background</item>
         <item name="colorSurface">@color/surface</item>
-        <item name="android:statusBarColor">@color/green_dark</item>
-        <item name="android:navigationBarColor">@color/green_primary</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+
+        <!-- Dark status/nav bars -->
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Text & input -->
+        <item name="android:editTextColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="colorControlNormal">@color/green_dim</item>
+        <item name="colorControlActivated">@color/green_primary</item>
+
+        <!-- Dark alert dialog -->
+        <item name="materialAlertDialogTheme">@style/Theme.MobileGroup.AlertDialog</item>
     </style>
 
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Group12_Asgmt2" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
-
-    <style name="Theme.Group12_Asgmt2" parent="Base.Theme.Group12_Asgmt2" />
-
-    <style name="CircleImage">
-        <item name="cornerSize">50%</item>
-    </style>
-
-    <style name="RoundedImage">
-        <item name="cornerSize">12dp</item>
+    <style name="Theme.MobileGroup.AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:background">@color/surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorPrimary">@color/green_primary</item>
     </style>
 
 </resources>

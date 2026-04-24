@@ -6,8 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 class RecipeAdapter(
     private val items: List<Recipe>,
@@ -31,16 +32,16 @@ class RecipeAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val item = items[position]
 
+        // Load image with Glide and rounded corners
         Glide.with(holder.itemView.context)
             .load(item.image)
+            .transform(CenterCrop(), RoundedCorners(16))
             .into(holder.ivRecipe)
 
-        holder.tvTime.text = "${15 + (position * 5)}m"
+        holder.tvTime.text = "30m" // Spoonacular Search By Ingredients doesn't return time by default
         holder.tvTitle.text = item.title
-
-        val firstUsed = item.usedIngredients.firstOrNull()?.name ?: "Ingredients"
-        holder.tvExpiryTag.text = "Uses $firstUsed"
-        holder.tvIngredientTag.text = "${item.usedIngredientCount} items owned"
+        holder.tvExpiryTag.text = "${item.usedIngredientCount} items"
+        holder.tvIngredientTag.text = "Missing ${item.missedIngredientCount}"
 
         holder.itemView.setOnClickListener {
             onClick(item)

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
 import com.example.group12_asgmt2.databinding.ActivityInventoryBinding
 import kotlinx.coroutines.launch
-
+//Hello World
 class InventoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityInventoryBinding
@@ -30,7 +30,10 @@ class InventoryActivity : AppCompatActivity() {
         const val EXTRA_UNIT     = "ingredient_unit"
         const val EXTRA_PRICE    = "ingredient_price"
         const val EXTRA_EXPIRY   = "ingredient_expiry"
-        const val EXTRA_PHOTO    = "ingredient_photo"
+        const val EXTRA_PURCHASE = "ingredient_purchase"
+        const val EXTRA_ALERT    = "ingredient_alert"
+        const val EXTRA_QUICK_TAG= "ingredient_quick_tag"
+        const val EXTRA_PHOTO_URL= "ingredient_photo_url"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,11 +41,14 @@ class InventoryActivity : AppCompatActivity() {
         binding = ActivityInventoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        // Header Title (optional dynamic setting, but already set in XML)
+        // binding.tvGreeting.text = "Inventory"
+        // binding.tvKitchenName.text = "My Pantry"
 
         setupRecyclerView()
         setupCategoryChips()
         setupSwipeRefresh()
+        setupBottomNavigation()
 
         binding.fabAdd.setOnClickListener {
             startActivityForResult(
@@ -66,7 +72,10 @@ class InventoryActivity : AppCompatActivity() {
                     putExtra(EXTRA_UNIT,     ingredient.unit)
                     putExtra(EXTRA_PRICE,    ingredient.price)
                     putExtra(EXTRA_EXPIRY,   ingredient.expiryDate)
-                    putExtra(EXTRA_PHOTO,    ingredient.photoUrl)
+                    putExtra(EXTRA_PURCHASE, ingredient.purchaseDate)
+                    putExtra(EXTRA_ALERT,    ingredient.alertEnabled ?: true)
+                    putExtra(EXTRA_QUICK_TAG,ingredient.quickTag)
+                    putExtra(EXTRA_PHOTO_URL,ingredient.photoUrl)
                 }
                 startActivityForResult(intent, REQUEST_CODE_ADD_EDIT)
             },
@@ -166,11 +175,79 @@ class InventoryActivity : AppCompatActivity() {
         binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
     }
 
+    private fun setupBottomNavigation() {
+        binding.navHome.setOnClickListener {
+            // Dashboard is likely the main entry, so we just finish this to go back or start Dashboard
+            val intent = Intent(this, DashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+            overridePendingTransition(0, 0)
+        }
+
+        binding.navPantry.setOnClickListener {
+            // Already here
+        }
+
+
+
+        binding.navStats.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
+            finish()
+            overridePendingTransition(0, 0)
+        }
+
+        binding.navRecipes.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            overridePendingTransition(0, 0)
+        }
+        
+        binding.btnNotification.setOnClickListener {
+             showExpiryNotifications()
+        }
+    }
+
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_ADD_EDIT && resultCode == RESULT_OK) {
             loadIngredients()
+        }
+    }
+
+    private fun showExpiryNotifications() {
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val ingredients = IngredientRepository.getAll()
+                val criticalIngredients = ingredients.filter {
+                    val status = DateUtils.getExpiryStatus(it.expiryDate)
+                    status == DateUtils.ExpiryStatus.EXPIRED || status == DateUtils.ExpiryStatus.SOON
+                }
+
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    if (criticalIngredients.isEmpty()) {
+                        Toast.makeText(this@InventoryActivity, "All items are fresh!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val message = java.lang.StringBuilder()
+                        criticalIngredients.forEach {
+                            val status = DateUtils.getExpiryStatus(it.expiryDate)
+                            val statusStr = if (status == DateUtils.ExpiryStatus.EXPIRED) "Expired" else "Nearly Expired"
+                            message.append("• ${it.name}: $statusStr\n")
+                        }
+
+                        AlertDialog.Builder(this@InventoryActivity)
+                            .setTitle("Expiry Notifications")
+                            .setMessage(message.toString().trim())
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }
+                }
+            } catch (e: Exception) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    Toast.makeText(this@InventoryActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

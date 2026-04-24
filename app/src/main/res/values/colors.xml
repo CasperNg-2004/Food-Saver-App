@@ -1,42 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Green Palette -->
-    <color name="green_primary">#2E7D32</color>
-    <color name="green_light">#4CAF50</color>
-    <color name="green_dark">#1B5E20</color>
-    <color name="green_surface">#E8F5E9</color>
+    <!-- ── Dark Green Backgrounds (matches dashboard) ── -->
+    <color name="background">#0F1C0F</color>
+    <color name="surface">#1A2E1A</color>
+    <color name="surface_elevated">#1F3520</color>
+    <color name="divider">#2A3D2A</color>
+    <color name="green_dim">#2D4A2D</color>
 
-    <!-- Backgrounds -->
-    <color name="background">#F1F8E9</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="divider">#E0E0E0</color>
+    <!-- ── Accent (bright neon green from dashboard) ── -->
+    <color name="green_primary">#4ADE80</color>
+    <color name="green_button">#22C55E</color>
+    <color name="green_dark">#166534</color>
 
-    <!-- Text -->
-    <color name="text_primary">#1A1A1A</color>
-    <color name="text_secondary">#757575</color>
+    <!-- ── Text ── -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#86EFAC</color>
+    <color name="text_hint">#4D7A4D</color>
 
-    <!-- Expiry Status -->
-    <color name="expiry_expired">#D32F2F</color>
-    <color name="expiry_soon">#E65100</color>
-    <color name="expiry_fresh">#2E7D32</color>
+    <!-- ── Expiry Status ── -->
+    <color name="expiry_expired">#F87171</color>
+    <color name="expiry_soon">#FBBF24</color>
+    <color name="expiry_fresh">#4ADE80</color>
 
-    <!-- Category Colors -->
-    <color name="category_protein">#C62828</color>
-    <color name="category_vitamin">#E65100</color>
-    <color name="category_dairy">#1565C0</color>
-    <color name="category_grain">#4E342E</color>
-    <color name="category_vegetable">#2E7D32</color>
-    <color name="category_fruit">#6A1B9A</color>
-    <color name="category_spice">#BF360C</color>
-    <color name="category_other">#546E7A</color>
+    <!-- ── Category Badges (vibrant on dark background) ── -->
+    <color name="category_protein">#F87171</color>
+    <color name="category_vitamin">#FB923C</color>
+    <color name="category_dairy">#60A5FA</color>
+    <color name="category_grain">#A78BFA</color>
+    <color name="category_vegetable">#4ADE80</color>
+    <color name="category_fruit">#F472B6</color>
+    <color name="category_spice">#FCD34D</color>
+    <color name="category_other">#94A3B8</color>
 
-    <!-- Dark Theme Dashboard Colors -->
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="bg_dark">#101813</color> 
-    <color name="card_dark">#1A241B</color> 
-    <color name="card_darker">#141D16</color> 
-    <color name="red_waste">#E74C3C</color> 
-    <color name="text_white">#FFFFFF</color>
-    <color name="text_grey">#8B9D92</color>
+    <!-- ── Launcher ── -->
+    <color name="ic_launcher_background">#166534</color>
 </resources>
