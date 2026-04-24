@@ -201,7 +201,7 @@ class InventoryActivity : AppCompatActivity() {
         }
         
         binding.btnNotification.setOnClickListener {
-             Toast.makeText(this, "Notifications clicked", Toast.LENGTH_SHORT).show()
+             showExpiryNotifications()
         }
     }
 
@@ -210,6 +210,41 @@ class InventoryActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_CODE_ADD_EDIT && resultCode == RESULT_OK) {
             loadIngredients()
+        }
+    }
+
+    private fun showExpiryNotifications() {
+        lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val ingredients = IngredientRepository.getAll()
+                val criticalIngredients = ingredients.filter {
+                    val status = DateUtils.getExpiryStatus(it.expiryDate)
+                    status == DateUtils.ExpiryStatus.EXPIRED || status == DateUtils.ExpiryStatus.SOON
+                }
+
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    if (criticalIngredients.isEmpty()) {
+                        Toast.makeText(this@InventoryActivity, "All items are fresh!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val message = java.lang.StringBuilder()
+                        criticalIngredients.forEach {
+                            val status = DateUtils.getExpiryStatus(it.expiryDate)
+                            val statusStr = if (status == DateUtils.ExpiryStatus.EXPIRED) "Expired" else "Nearly Expired"
+                            message.append("• ${it.name}: $statusStr\n")
+                        }
+
+                        AlertDialog.Builder(this@InventoryActivity)
+                            .setTitle("Expiry Notifications")
+                            .setMessage(message.toString().trim())
+                            .setPositiveButton("OK", null)
+                            .show()
+                    }
+                }
+            } catch (e: Exception) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    Toast.makeText(this@InventoryActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

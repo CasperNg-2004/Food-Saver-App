@@ -245,10 +245,10 @@ class DashboardActivity : AppCompatActivity() {
                     
                     val difference = currentWeekWaste - lastWeekWaste
                     if (difference <= 0) {
-                        tvWeeklySaved.text = String.format("-$%.2f vs last week", kotlin.math.abs(difference))
+                        tvWeeklySaved.text = String.format("-$%.2f less waste vs last week", kotlin.math.abs(difference))
                         tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
                     } else {
-                        tvWeeklySaved.text = String.format("+$%.2f vs last week", difference)
+                        tvWeeklySaved.text = String.format("+$%.2f more waste vs last week", difference)
                         tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#FF4B4B"))
                     }
                     

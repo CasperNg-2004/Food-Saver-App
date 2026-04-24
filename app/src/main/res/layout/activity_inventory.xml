@@ -53,7 +53,7 @@
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/bg_notification_circle"
                 android:padding="11dp"
-                android:src="@drawable/ic_bell"
+                android:src="@android:drawable/ic_popup_reminder"
                 app:tint="#14F25C" />
         </RelativeLayout>
 
