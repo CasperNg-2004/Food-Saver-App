@@ -12,6 +12,7 @@ object IngredientRepository {
     suspend fun getAll(): List<Ingredient> {
         return supabase.from(TABLE)
             .select {
+                filter { eq("status", "ACTIVE") }
                 order(column = "expiry_date", order = Order.ASCENDING)
             }
             .decodeList<Ingredient>()
@@ -21,7 +22,10 @@ object IngredientRepository {
     suspend fun getByCategory(category: String): List<Ingredient> {
         return supabase.from(TABLE)
             .select {
-                filter { eq("category", category) }
+                filter { 
+                    eq("category", category) 
+                    eq("status", "ACTIVE")
+                }
                 order(column = "expiry_date", order = Order.ASCENDING)
             }
             .decodeList<Ingredient>()
@@ -39,10 +43,32 @@ object IngredientRepository {
         }
     }
 
-    /** Delete an ingredient by id. */
-    suspend fun delete(id: String) {
-        supabase.from(TABLE).delete {
+    @kotlinx.serialization.Serializable
+    private data class StatusUpdate(
+        val status: String,
+        @kotlinx.serialization.SerialName("resolved_date") val resolvedDate: String
+    )
+
+    /** Mark an ingredient as consumed. */
+    suspend fun markAsConsumed(id: String, date: String) {
+        supabase.from(TABLE).update(StatusUpdate("CONSUMED", date)) {
             filter { eq("id", id) }
         }
+    }
+
+    /** Mark an ingredient as wasted. */
+    suspend fun markAsWasted(id: String, date: String) {
+        supabase.from(TABLE).update(StatusUpdate("WASTED", date)) {
+            filter { eq("id", id) }
+        }
+    }
+
+    /** Fetch historical data (CONSUMED or WASTED items). */
+    suspend fun getHistoricalData(): List<Ingredient> {
+        return supabase.from(TABLE)
+            .select {
+                filter { neq("status", "ACTIVE") }
+            }
+            .decodeList<Ingredient>()
     }
 }

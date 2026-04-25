@@ -14,5 +14,35 @@ class StatisticsActivity : AppCompatActivity() {
                 .replace(R.id.statsFragmentContainer, FragmentStatistics())
                 .commit()
         }
+
+        setupBottomNavigation()
+    }
+
+    private fun setupBottomNavigation() {
+        findViewById<android.view.View>(R.id.navHome).setOnClickListener {
+            val intent = android.content.Intent(this, DashboardActivity::class.java)
+            intent.flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+            overridePendingTransition(0, 0)
+        }
+
+        findViewById<android.view.View>(R.id.navPantry).setOnClickListener {
+            val intent = android.content.Intent(this, InventoryActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(0, 0)
+        }
+
+        findViewById<android.view.View>(R.id.navStats).setOnClickListener {
+            // Already here
+        }
+
+        findViewById<android.view.View>(R.id.navRecipes).setOnClickListener {
+            val intent = android.content.Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+            overridePendingTransition(0, 0)
+        }
     }
 }

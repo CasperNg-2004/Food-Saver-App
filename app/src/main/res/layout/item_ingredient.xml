@@ -33,6 +33,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <!-- Food Photo (hidden when no URL) -->
+            <ImageView
+                android:id="@+id/ivFoodPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:contentDescription="Food photo" />
+
             <!-- Row 1: Name + Delete -->
             <LinearLayout
                 android:layout_width="match_parent"
