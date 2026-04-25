@@ -67,19 +67,19 @@ public class RecipeActivity extends AppCompatActivity {
 
         navHome.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(RecipeActivity.this, DashboardActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0);
         });
         navPantry.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(RecipeActivity.this, InventoryActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0);
         });
         navStats.setOnClickListener(v -> {
             android.content.Intent intent = new android.content.Intent(RecipeActivity.this, StatisticsActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
             overridePendingTransition(0, 0);
         });

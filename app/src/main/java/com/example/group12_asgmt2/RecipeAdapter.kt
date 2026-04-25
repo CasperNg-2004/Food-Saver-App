@@ -38,10 +38,17 @@ class RecipeAdapter(
             .transform(CenterCrop(), RoundedCorners(16))
             .into(holder.ivRecipe)
 
+        // Build comma-separated list of pantry ingredients used
+        val usedNames = item.usedIngredients
+            ?.mapNotNull { it?.name?.takeIf { n -> n.isNotBlank() } }
+            ?.joinToString(", ")
+            ?.takeIf { it.isNotEmpty() }
+            ?: "No pantry match"
+
         holder.tvTime.text = "30m"
         holder.tvTitle.text = item.title
-        holder.tvExpiryTag.text = "${item.usedIngredientCount} items"
-        holder.tvIngredientTag.text = "Missing ${item.missedIngredientCount}"
+        holder.tvExpiryTag.text = "Uses your: $usedNames"
+        holder.tvIngredientTag.text = "Uses your: $usedNames"
 
         holder.itemView.setOnClickListener {
             try {

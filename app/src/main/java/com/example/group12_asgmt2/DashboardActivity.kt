@@ -333,11 +333,17 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         btnSeeAllInventory.setOnClickListener {
-            startActivity(Intent(this, InventoryActivity::class.java))
+            val intent = Intent(this, InventoryActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         btnSeeAllRecipes.setOnClickListener {
-            startActivity(Intent(this, RecipeActivity::class.java))
+            val intent = Intent(this, RecipeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         tvKitchenName.setOnClickListener {
@@ -349,17 +355,26 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navPantry.setOnClickListener {
-            startActivity(Intent(this, InventoryActivity::class.java))
+            val intent = Intent(this, InventoryActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
 
 
         navStats.setOnClickListener {
-            startActivity(Intent(this, StatisticsActivity::class.java))
+            val intent = Intent(this, StatisticsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         navRecipes.setOnClickListener {
-            startActivity(Intent(this, RecipeActivity::class.java))
+            val intent = Intent(this, RecipeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 

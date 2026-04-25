@@ -9,6 +9,9 @@ class StatisticsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_statistics)
 
+        // Hide the top action bar so users use the bottom nav bar
+        supportActionBar?.hide()
+
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.statsFragmentContainer, FragmentStatistics())
@@ -21,7 +24,7 @@ class StatisticsActivity : AppCompatActivity() {
     private fun setupBottomNavigation() {
         findViewById<android.view.View>(R.id.navHome).setOnClickListener {
             val intent = android.content.Intent(this, DashboardActivity::class.java)
-            intent.flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
             startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
@@ -29,6 +32,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         findViewById<android.view.View>(R.id.navPantry).setOnClickListener {
             val intent = android.content.Intent(this, InventoryActivity::class.java)
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
@@ -40,6 +44,7 @@ class StatisticsActivity : AppCompatActivity() {
 
         findViewById<android.view.View>(R.id.navRecipes).setOnClickListener {
             val intent = android.content.Intent(this, RecipeActivity::class.java)
+            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION)
             startActivity(intent)
             finish()
             overridePendingTransition(0, 0)

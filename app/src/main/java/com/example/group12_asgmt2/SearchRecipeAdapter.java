@@ -37,7 +37,20 @@ public class SearchRecipeAdapter extends RecyclerView.Adapter<SearchRecipeAdapte
 
         // Paste the title and missing ingredient count onto the screen
         holder.titleText.setText(recipe.getTitle());
-        holder.missingText.setText("Missing Ingredients: " + recipe.getMissedIngredientCount());
+        // Build comma-separated list of pantry ingredients used
+        String usedNames = "No pantry match";
+        List<Recipe.Ingredient> used = recipe.getUsedIngredients();
+        if (used != null && !used.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < used.size(); i++) {
+                if (used.get(i) != null && used.get(i).getName() != null) {
+                    if (sb.length() > 0) sb.append(", ");
+                    sb.append(used.get(i).getName());
+                }
+            }
+            if (sb.length() > 0) usedNames = sb.toString();
+        }
+        holder.missingText.setText("Uses your: " + usedNames);
 
         // Use Glide to download the picture from the internet URL and put it in the ImageView
         Glide.with(context)

@@ -188,9 +188,8 @@ class InventoryActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.navHome.setOnClickListener {
-            // Dashboard is likely the main entry, so we just finish this to go back or start Dashboard
             val intent = Intent(this, DashboardActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NO_ANIMATION
             startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
@@ -203,13 +202,17 @@ class InventoryActivity : AppCompatActivity() {
 
 
         binding.navStats.setOnClickListener {
-            startActivity(Intent(this, StatisticsActivity::class.java))
+            val intent = Intent(this, StatisticsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
         }
 
         binding.navRecipes.setOnClickListener {
-            startActivity(Intent(this, RecipeActivity::class.java))
+            val intent = Intent(this, RecipeActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
         }
