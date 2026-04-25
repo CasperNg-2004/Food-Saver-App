@@ -151,22 +151,33 @@ class InventoryActivity : AppCompatActivity() {
     }
 
     private fun confirmDelete(ingredient: Ingredient) {
+        val options = arrayOf("Consumed", "Wasted")
         AlertDialog.Builder(this)
-            .setTitle("Delete Ingredient")
-            .setMessage("Delete \"${ingredient.name}\"?")
-            .setPositiveButton("Delete") { _, _ -> deleteIngredient(ingredient) }
+            .setTitle("What happened to \"${ingredient.name}\"?")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> resolveIngredient(ingredient, "CONSUMED")
+                    1 -> resolveIngredient(ingredient, "WASTED")
+                }
+            }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun deleteIngredient(ingredient: Ingredient) {
+    private fun resolveIngredient(ingredient: Ingredient, status: String) {
         lifecycleScope.launch {
             try {
-                IngredientRepository.delete(ingredient.id!!)
-                Toast.makeText(this@InventoryActivity, "${ingredient.name} deleted", Toast.LENGTH_SHORT).show()
+                val date = java.time.LocalDate.now().toString()
+                if (status == "CONSUMED") {
+                    IngredientRepository.markAsConsumed(ingredient.id!!, date)
+                    Toast.makeText(this@InventoryActivity, "${ingredient.name} consumed", Toast.LENGTH_SHORT).show()
+                } else {
+                    IngredientRepository.markAsWasted(ingredient.id!!, date)
+                    Toast.makeText(this@InventoryActivity, "${ingredient.name} wasted", Toast.LENGTH_SHORT).show()
+                }
                 loadIngredients()
             } catch (e: Exception) {
-                Toast.makeText(this@InventoryActivity, "Delete failed: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@InventoryActivity, "Update failed: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

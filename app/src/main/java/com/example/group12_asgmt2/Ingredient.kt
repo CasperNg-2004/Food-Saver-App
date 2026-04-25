@@ -34,7 +34,12 @@ data class Ingredient(
 
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     @SerialName("created_at")
-    val createdAt: String? = null
+    val createdAt: String? = null,
+
+    val status: String? = "ACTIVE",
+
+    @SerialName("resolved_date")
+    val resolvedDate: String? = null
 )
 
 /** Payload used for INSERT and UPDATE */
@@ -59,7 +64,12 @@ data class IngredientPayload(
     val quickTag: String? = null,
 
     @SerialName("photo_url")
-    val photoUrl: String? = null
+    val photoUrl: String? = null,
+
+    val status: String? = "ACTIVE",
+
+    @SerialName("resolved_date")
+    val resolvedDate: String? = null
 )
 
 enum class Category(val displayName: String) {

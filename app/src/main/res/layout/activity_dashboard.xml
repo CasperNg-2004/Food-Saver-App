@@ -522,30 +522,6 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <!--
-        <LinearLayout
-            android:id="@+id/navScan"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <FrameLayout
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="@drawable/bg_scan_circle">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="center"
-                    android:src="@android:drawable/ic_menu_camera"
-                    app:tint="#012B13" />
-            </FrameLayout>
-        </LinearLayout>
-        -->
-
         <LinearLayout
             android:id="@+id/navStats"
             android:layout_width="0dp"
