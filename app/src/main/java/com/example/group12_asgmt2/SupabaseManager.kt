@@ -2,6 +2,7 @@ package com.example.group12_asgmt2
 
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
+import io.github.jan.supabase.storage.Storage
 
 object SupabaseManager {
 
@@ -17,6 +18,7 @@ object SupabaseManager {
             supabaseKey = SUPABASE_ANON_KEY
         ) {
             install(Postgrest)
+            install(Storage)
         }
     }
 }
