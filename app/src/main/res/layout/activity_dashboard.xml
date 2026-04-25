@@ -474,7 +474,7 @@
         android:orientation="horizontal"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
-        android:weightSum="4">
+        android:weightSum="5">
 
         <LinearLayout
             android:id="@+id/navHome"
@@ -518,6 +518,29 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Pantry"
+                android:textColor="#A6B8AD"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navScan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/ic_menu_camera"
+                app:tint="#A6B8AD" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="Scan"
                 android:textColor="#A6B8AD"
                 android:textSize="10sp" />
         </LinearLayout>

@@ -209,7 +209,7 @@ class InventoryActivity : AppCompatActivity() {
         }
 
         binding.navRecipes.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, RecipeActivity::class.java))
             finish()
             overridePendingTransition(0, 0)
         }

@@ -39,7 +39,7 @@ class StatisticsActivity : AppCompatActivity() {
         }
 
         findViewById<android.view.View>(R.id.navRecipes).setOnClickListener {
-            val intent = android.content.Intent(this, MainActivity::class.java)
+            val intent = android.content.Intent(this, RecipeActivity::class.java)
             startActivity(intent)
             finish()
             overridePendingTransition(0, 0)
