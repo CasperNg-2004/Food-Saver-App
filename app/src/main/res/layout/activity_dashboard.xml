@@ -522,6 +522,7 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
+
         <LinearLayout
             android:id="@+id/navStats"
             android:layout_width="0dp"

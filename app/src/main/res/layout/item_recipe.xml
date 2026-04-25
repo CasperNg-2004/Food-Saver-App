@@ -3,35 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_margin="8dp"
-    android:padding="12dp"
-    android:background="#FFFFFF"
-    android:elevation="4dp">
+    android:layout_marginBottom="16dp"
+    android:background="#FFFFFF">
 
     <ImageView
         android:id="@+id/imageView_recipe"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:background="#E0E0E0" />
+        android:scaleType="centerCrop" />
 
-    <TextView
-        android:id="@+id/textView_recipe_title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Recipe Name"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginTop="12dp" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textView_missing_ingredients"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Missing Ingredients: 0"
-        android:textSize="14sp"
-        android:textColor="#D32F2F"
-        android:layout_marginTop="4dp" />
+        <TextView
+            android:id="@+id/textView_recipe_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Recipe Name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/textView_missing_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uses your: ingredients"
+            android:textSize="14sp"
+            android:textColor="#4CAF50"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
 
 </LinearLayout>

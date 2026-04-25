@@ -32,19 +32,31 @@ class RecipeAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val item = items[position]
 
-        // Load image with Glide and rounded corners
+        // Load image URL from API with Glide and rounded corners
         Glide.with(holder.itemView.context)
             .load(item.image)
             .transform(CenterCrop(), RoundedCorners(16))
             .into(holder.ivRecipe)
 
-        holder.tvTime.text = "30m" // Spoonacular Search By Ingredients doesn't return time by default
+        // Build comma-separated list of pantry ingredients used
+        val usedNames = item.usedIngredients
+            ?.mapNotNull { it?.name?.takeIf { n -> n.isNotBlank() } }
+            ?.joinToString(", ")
+            ?.takeIf { it.isNotEmpty() }
+            ?: "No pantry match"
+
+        holder.tvTime.text = "30m"
         holder.tvTitle.text = item.title
-        holder.tvExpiryTag.text = "${item.usedIngredientCount} items"
-        holder.tvIngredientTag.text = "Missing ${item.missedIngredientCount}"
+        holder.tvExpiryTag.text = "Uses your: $usedNames"
+        holder.tvIngredientTag.text = "Uses your: $usedNames"
 
         holder.itemView.setOnClickListener {
-            onClick(item)
+            try {
+                onClick(item)
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(holder.itemView.context, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                e.printStackTrace()
+            }
         }
     }
 

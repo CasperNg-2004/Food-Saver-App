@@ -49,7 +49,7 @@ class AddEditIngredientActivity : AppCompatActivity() {
         }
 
         val isEditing = editingIngredient != null
-        binding.tvTitle.text = if (isEditing) "Edit Item" else "Add New Item"
+        binding.incHeader.tvTitle.text = if (isEditing) "Edit Item" else "Add New Item"
 
         setupCategorySpinner()
         setupUnitSpinner()
@@ -66,23 +66,23 @@ class AddEditIngredientActivity : AppCompatActivity() {
         val categories = listOf("Select a category") + Category.displayNames()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categories)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerCategory.adapter = adapter
+        binding.incForm.spinnerCategory.adapter = adapter
     }
 
     private fun setupUnitSpinner() {
         val units = listOf("Select unit") + FoodUnit.symbols()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, units)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinnerUnit.adapter = adapter
+        binding.incForm.spinnerUnit.adapter = adapter
     }
 
     private fun setupDatePickers() {
-        binding.etPurchaseDate.setOnClickListener {
-            showDatePicker(binding.etPurchaseDate, purchaseCalendar)
+        binding.incForm.etPurchaseDate.setOnClickListener {
+            showDatePicker(binding.incForm.etPurchaseDate, purchaseCalendar)
         }
 
-        binding.etExpiryDate.setOnClickListener {
-            showDatePicker(binding.etExpiryDate, expiryCalendar)
+        binding.incForm.etExpiryDate.setOnClickListener {
+            showDatePicker(binding.incForm.etExpiryDate, expiryCalendar)
         }
     }
 
@@ -102,14 +102,14 @@ class AddEditIngredientActivity : AppCompatActivity() {
     }
 
     private fun setupQuantityButtons() {
-        binding.btnMinus.setOnClickListener {
+        binding.incForm.btnMinus.setOnClickListener {
             if (quantity > 0.5) {
                 quantity -= 1.0
                 updateQuantityUI()
             }
         }
 
-        binding.btnPlus.setOnClickListener {
+        binding.incForm.btnPlus.setOnClickListener {
             quantity += 1.0
             updateQuantityUI()
         }
@@ -122,11 +122,11 @@ class AddEditIngredientActivity : AppCompatActivity() {
         } else {
             String.format(Locale.getDefault(), "%.1f", quantity)
         }
-        binding.tvQuantity.text = formatted
+        binding.incForm.tvQuantity.text = formatted
     }
 
     private fun setupQuickTags() {
-        val tags = listOf(binding.tagFresh, binding.tagFrozen, binding.tagCanned, binding.tagOpened)
+        val tags = listOf(binding.incOptions.tagFresh, binding.incOptions.tagFrozen, binding.incOptions.tagCanned, binding.incOptions.tagOpened)
 
         fun resetTags() {
             for (tag in tags) {
@@ -142,18 +142,18 @@ class AddEditIngredientActivity : AppCompatActivity() {
             tag.setTextColor(getColor(android.R.color.white))
         }
 
-        binding.tagFresh.setOnClickListener { selectTag(binding.tagFresh, "Fresh") }
-        binding.tagFrozen.setOnClickListener { selectTag(binding.tagFrozen, "Frozen") }
-        binding.tagCanned.setOnClickListener { selectTag(binding.tagCanned, "Canned") }
-        binding.tagOpened.setOnClickListener { selectTag(binding.tagOpened, "Opened") }
+        binding.incOptions.tagFresh.setOnClickListener { selectTag(binding.incOptions.tagFresh, "Fresh") }
+        binding.incOptions.tagFrozen.setOnClickListener { selectTag(binding.incOptions.tagFrozen, "Frozen") }
+        binding.incOptions.tagCanned.setOnClickListener { selectTag(binding.incOptions.tagCanned, "Canned") }
+        binding.incOptions.tagOpened.setOnClickListener { selectTag(binding.incOptions.tagOpened, "Opened") }
 
-        selectTag(binding.tagFresh, "Fresh")
+        selectTag(binding.incOptions.tagFresh, "Fresh")
     }
 
     private fun setupClickListeners() {
-        binding.btnBack.setOnClickListener { finish() }
+        binding.incHeader.btnBack.setOnClickListener { finish() }
 
-        binding.btnAddPhoto.setOnClickListener {
+        binding.incPhoto.btnAddPhoto.setOnClickListener {
             Toast.makeText(this, "Photo upload can be added later", Toast.LENGTH_SHORT).show()
         }
 
@@ -163,43 +163,43 @@ class AddEditIngredientActivity : AppCompatActivity() {
     }
 
     private fun prefillForm(ingredient: Ingredient) {
-        binding.etItemName.setText(ingredient.name)
+        binding.incForm.etItemName.setText(ingredient.name)
 
         // Select Category
         val categories = listOf("Select a category") + Category.displayNames()
         val catIndex = categories.indexOf(ingredient.category)
-        if (catIndex >= 0) binding.spinnerCategory.setSelection(catIndex)
+        if (catIndex >= 0) binding.incForm.spinnerCategory.setSelection(catIndex)
 
         // Select Unit
         val units = listOf("Select unit") + FoodUnit.symbols()
         val unitIndex = units.indexOf(ingredient.unit)
-        if (unitIndex >= 0) binding.spinnerUnit.setSelection(unitIndex)
+        if (unitIndex >= 0) binding.incForm.spinnerUnit.setSelection(unitIndex)
 
         // Quantity
         quantity = ingredient.quantity
         updateQuantityUI()
 
         // Price
-        binding.etPrice.setText(ingredient.price.toString())
+        binding.incForm.etPrice.setText(ingredient.price.toString())
 
         // Dates formatting (DB stores as YYYY-MM-DD, UI shows MM/DD/YYYY)
         if (ingredient.purchaseDate != null) {
-            binding.etPurchaseDate.setText(toDisplayDate(ingredient.purchaseDate))
+            binding.incForm.etPurchaseDate.setText(toDisplayDate(ingredient.purchaseDate))
         }
         if (ingredient.expiryDate.isNotEmpty()) {
-            binding.etExpiryDate.setText(toDisplayDate(ingredient.expiryDate))
+            binding.incForm.etExpiryDate.setText(toDisplayDate(ingredient.expiryDate))
         }
 
         // Toggle Alert
-        binding.switchExpiryAlert.isChecked = ingredient.alertEnabled ?: true
+        binding.incOptions.switchExpiryAlert.isChecked = ingredient.alertEnabled ?: true
 
         // Quick Tag
         selectedTag = ingredient.quickTag ?: "Fresh"
         when (selectedTag) {
-            "Frozen" -> binding.tagFrozen.performClick()
-            "Canned" -> binding.tagCanned.performClick()
-            "Opened" -> binding.tagOpened.performClick()
-            else -> binding.tagFresh.performClick()
+            "Frozen" -> binding.incOptions.tagFrozen.performClick()
+            "Canned" -> binding.incOptions.tagCanned.performClick()
+            "Opened" -> binding.incOptions.tagOpened.performClick()
+            else -> binding.incOptions.tagFresh.performClick()
         }
 
         // Photo URL
@@ -207,17 +207,17 @@ class AddEditIngredientActivity : AppCompatActivity() {
     }
 
     private fun saveIngredient(isEditing: Boolean) {
-        val itemName = binding.etItemName.text.toString().trim()
-        val category = binding.spinnerCategory.selectedItem.toString()
-        val purchaseDateText = binding.etPurchaseDate.text.toString().trim()
-        val expiryDateText = binding.etExpiryDate.text.toString().trim()
-        val unit = binding.spinnerUnit.selectedItem.toString()
-        val priceText = binding.etPrice.text.toString().trim()
-        val expiryAlertOn = binding.switchExpiryAlert.isChecked
+        val itemName = binding.incForm.etItemName.text.toString().trim()
+        val category = binding.incForm.spinnerCategory.selectedItem.toString()
+        val purchaseDateText = binding.incForm.etPurchaseDate.text.toString().trim()
+        val expiryDateText = binding.incForm.etExpiryDate.text.toString().trim()
+        val unit = binding.incForm.spinnerUnit.selectedItem.toString()
+        val priceText = binding.incForm.etPrice.text.toString().trim()
+        val expiryAlertOn = binding.incOptions.switchExpiryAlert.isChecked
 
         if (itemName.isEmpty()) {
             Toast.makeText(this, "Item name is required", Toast.LENGTH_SHORT).show()
-            binding.etItemName.requestFocus()
+            binding.incForm.etItemName.requestFocus()
             return
         }
         if (category == "Select a category") {

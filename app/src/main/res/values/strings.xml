@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Group12_Asgmt2</string>
-    <string name="api_key">6dce9499e4ff4ece813dc1d39d977d8a</string>
+    <string name="api_key">e6871d94f0e942bda4a474e393dabcff</string>
 
     <string name="title_add_ingredient">Add Ingredient</string>
     <string name="title_edit_ingredient">Edit Ingredient</string>
