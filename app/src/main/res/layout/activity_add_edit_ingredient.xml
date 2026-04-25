@@ -16,13 +16,13 @@
         android:paddingEnd="12dp"
         android:paddingBottom="24dp">
 
-        <include layout="@layout/include_ingredient_header" />
+        <include layout="@layout/include_ingredient_header" android:id="@+id/incHeader" />
         
-        <include layout="@layout/include_ingredient_photo" />
+        <include layout="@layout/include_ingredient_photo" android:id="@+id/incPhoto" />
         
-        <include layout="@layout/include_ingredient_form" />
+        <include layout="@layout/include_ingredient_form" android:id="@+id/incForm" />
         
-        <include layout="@layout/include_ingredient_options" />
+        <include layout="@layout/include_ingredient_options" android:id="@+id/incOptions" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSave"
