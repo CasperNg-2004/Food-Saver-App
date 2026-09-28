@@ -23,19 +23,11 @@ class StatisticsActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         findViewById<android.view.View>(R.id.navHome).setOnClickListener {
-            val intent = android.content.Intent(this, DashboardActivity::class.java)
-            intent.flags = android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP or android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, DashboardActivity::class.java, true)
         }
 
         findViewById<android.view.View>(R.id.navPantry).setOnClickListener {
-            val intent = android.content.Intent(this, InventoryActivity::class.java)
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, InventoryActivity::class.java, true)
         }
 
         findViewById<android.view.View>(R.id.navStats).setOnClickListener {
@@ -43,11 +35,7 @@ class StatisticsActivity : AppCompatActivity() {
         }
 
         findViewById<android.view.View>(R.id.navRecipes).setOnClickListener {
-            val intent = android.content.Intent(this, RecipeActivity::class.java)
-            intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, RecipeActivity::class.java, true)
         }
     }
 }

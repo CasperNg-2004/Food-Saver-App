@@ -52,9 +52,9 @@ public class SearchRecipeAdapter extends RecyclerView.Adapter<SearchRecipeAdapte
         }
         holder.missingText.setText("Uses your: " + usedNames);
 
-        // Use Glide to download the picture from the internet URL and put it in the ImageView
+        // Load the image bundled with the app, so recipe cards also work offline.
         Glide.with(context)
-                .load(recipe.getImage())
+                .load(recipe.getImageResourceId() != 0 ? recipe.getImageResourceId() : recipe.getImage())
                 .into(holder.recipeImage);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -65,7 +65,7 @@ public class SearchRecipeAdapter extends RecyclerView.Adapter<SearchRecipeAdapte
                     android.content.Intent intent = new android.content.Intent(context, RecipeDetailActivity.class);
 
                     // Put the specific recipe they clicked inside the truck
-                    intent.putExtra("RECIPE_DATA", recipe);
+                    intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, recipe);
 
                     // Start the drive!
                     context.startActivity(intent);

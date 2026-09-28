@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:layout_marginBottom="16dp"
-    android:background="#FFFFFF">
+    android:background="@color/surface">
 
     <ImageView
         android:id="@+id/imageView_recipe"
@@ -25,7 +25,7 @@
             android:text="Recipe Name"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#000000" />
+            android:textColor="@color/text_primary" />
 
         <TextView
             android:id="@+id/textView_missing_ingredients"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:text="Uses your: ingredients"
             android:textSize="14sp"
-            android:textColor="#4CAF50"
+            android:textColor="@color/green_primary"
             android:layout_marginTop="4dp" />
 
     </LinearLayout>

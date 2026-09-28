@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
@@ -19,9 +20,13 @@ class InventoryActivity : AppCompatActivity() {
     private var allIngredients: List<Ingredient> = emptyList()
     private var selectedCategory: String? = null
 
-    companion object {
-        const val REQUEST_CODE_ADD_EDIT = 1001
+    private val ingredientEditorLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) loadIngredients()
+    }
 
+    companion object {
         // Extra keys for passing ingredient data to AddEditActivity
         const val EXTRA_ID       = "ingredient_id"
         const val EXTRA_NAME     = "ingredient_name"
@@ -51,10 +56,7 @@ class InventoryActivity : AppCompatActivity() {
         setupBottomNavigation()
 
         binding.fabAdd.setOnClickListener {
-            startActivityForResult(
-                Intent(this, AddEditIngredientActivity::class.java),
-                REQUEST_CODE_ADD_EDIT
-            )
+            ingredientEditorLauncher.launch(Intent(this, AddEditIngredientActivity::class.java))
         }
 
         loadIngredients()
@@ -77,7 +79,7 @@ class InventoryActivity : AppCompatActivity() {
                     putExtra(EXTRA_QUICK_TAG,ingredient.quickTag)
                     putExtra(EXTRA_PHOTO_URL,ingredient.photoUrl)
                 }
-                startActivityForResult(intent, REQUEST_CODE_ADD_EDIT)
+                ingredientEditorLauncher.launch(intent)
             },
             onDeleteClick = { ingredient ->
                 confirmDelete(ingredient)
@@ -92,7 +94,7 @@ class InventoryActivity : AppCompatActivity() {
         binding.chipGroupCategory.isSingleSelection = true
         binding.chipGroupCategory.isSelectionRequired = true
 
-        fun addChip(label: String, tag: String?) {
+        fun addChip(label: String) {
             val chip = Chip(this).apply {
                 text = label
                 isCheckable = true
@@ -101,8 +103,8 @@ class InventoryActivity : AppCompatActivity() {
             binding.chipGroupCategory.addView(chip)
         }
 
-        addChip("All", null)
-        Category.entries.forEach { addChip(it.displayName, it.displayName) }
+        addChip("All")
+        Category.entries.forEach { addChip(it.displayName) }
 
         // Check "All" by default
         (binding.chipGroupCategory.getChildAt(0) as? Chip)?.isChecked = true
@@ -165,14 +167,18 @@ class InventoryActivity : AppCompatActivity() {
     }
 
     private fun resolveIngredient(ingredient: Ingredient, status: String) {
+        val ingredientId = ingredient.id ?: run {
+            Toast.makeText(this, "This ingredient cannot be updated", Toast.LENGTH_SHORT).show()
+            return
+        }
         lifecycleScope.launch {
             try {
                 val date = java.time.LocalDate.now().toString()
                 if (status == "CONSUMED") {
-                    IngredientRepository.markAsConsumed(ingredient.id!!, date)
+                    IngredientRepository.markAsConsumed(ingredientId, date)
                     Toast.makeText(this@InventoryActivity, "${ingredient.name} consumed", Toast.LENGTH_SHORT).show()
                 } else {
-                    IngredientRepository.markAsWasted(ingredient.id!!, date)
+                    IngredientRepository.markAsWasted(ingredientId, date)
                     Toast.makeText(this@InventoryActivity, "${ingredient.name} wasted", Toast.LENGTH_SHORT).show()
                 }
                 loadIngredients()
@@ -188,11 +194,7 @@ class InventoryActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.navHome.setOnClickListener {
-            val intent = Intent(this, DashboardActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, DashboardActivity::class.java, true)
         }
 
         binding.navPantry.setOnClickListener {
@@ -202,31 +204,15 @@ class InventoryActivity : AppCompatActivity() {
 
 
         binding.navStats.setOnClickListener {
-            val intent = Intent(this, StatisticsActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, StatisticsActivity::class.java, true)
         }
 
         binding.navRecipes.setOnClickListener {
-            val intent = Intent(this, RecipeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            finish()
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, RecipeActivity::class.java, true)
         }
         
         binding.btnNotification.setOnClickListener {
              showExpiryNotifications()
-        }
-    }
-
-    @Suppress("OVERRIDE_DEPRECATION")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADD_EDIT && resultCode == RESULT_OK) {
-            loadIngredients()
         }
     }
 

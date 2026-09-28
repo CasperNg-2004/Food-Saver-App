@@ -67,7 +67,7 @@
                     android:layout_height="34dp"
                     android:src="@android:drawable/ic_menu_delete"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:tint="@color/expiry_expired"
+                    app:tint="@color/expiry_expired"
                     android:contentDescription="Delete ingredient" />
 
             </LinearLayout>
@@ -82,7 +82,7 @@
                 android:paddingEnd="10dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp"
-                android:textColor="@color/background"
+                android:textColor="@color/on_accent"
                 android:textSize="10sp"
                 android:textStyle="bold"
                 android:background="@drawable/bg_category_badge" />

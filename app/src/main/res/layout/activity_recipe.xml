@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#101813"
+    android:background="@color/background"
     tools:context=".RecipeActivity">
 
     <!-- Scrollable Content Area -->
@@ -33,7 +33,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="RECIPES"
-                    android:textColor="#8EB3A0"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
                 <TextView
@@ -43,7 +43,7 @@
                     android:text="Your Pantry"
                     android:textSize="28sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
 
             <TextView
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Loading pantry items..."
                 android:textSize="14sp"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="8dp" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -68,15 +68,15 @@
                 android:text="Find Recipes"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="8dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Auto-generating recipes from your pantry ingredients."
+                android:text="Offline suggestions ranked by the ingredients in your pantry."
                 android:textSize="14sp"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="16dp" />
 
             <ProgressBar
@@ -99,7 +99,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="74dp"
-        android:background="#082517"
+        android:background="@color/navigation_background"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="4dp"
@@ -118,14 +118,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_view"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Home"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -141,14 +141,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_agenda"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Pantry"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -164,14 +164,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Stats"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -187,14 +187,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_edit"
-                app:tint="#14F25C" />
+                app:tint="@color/green_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Recipes"
-                android:textColor="#14F25C"
+                android:textColor="@color/green_primary"
                 android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>

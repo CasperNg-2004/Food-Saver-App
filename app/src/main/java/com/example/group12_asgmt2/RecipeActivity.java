@@ -3,12 +3,9 @@ package com.example.group12_asgmt2;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,21 +14,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import kotlinx.coroutines.Job;
 
 public class RecipeActivity extends AppCompatActivity {
 
     private ProgressBar loadingSpinner;
     private RecyclerView recipeRecyclerView;
-    private SpoonacularApi apiService;
-
     private TextView pantryStatusTextView;
     private RecyclerView pantryRecyclerView;
     private PantryChipAdapter pantryAdapter;
+    private Job pantryLoadJob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +41,6 @@ public class RecipeActivity extends AppCompatActivity {
         pantryAdapter = new PantryChipAdapter(new ArrayList<>());
         pantryRecyclerView.setAdapter(pantryAdapter);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.spoonacular.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        apiService = retrofit.create(SpoonacularApi.class);
-
         setupBottomNavigation();
         loadPantryIngredients();
     }
@@ -66,22 +52,13 @@ public class RecipeActivity extends AppCompatActivity {
         LinearLayout navRecipes = findViewById(R.id.navRecipes);
 
         navHome.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, DashboardActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
+            AppNavigator.open(RecipeActivity.this, DashboardActivity.class, true);
         });
         navPantry.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, InventoryActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
+            AppNavigator.open(RecipeActivity.this, InventoryActivity.class, true);
         });
         navStats.setOnClickListener(v -> {
-            android.content.Intent intent = new android.content.Intent(RecipeActivity.this, StatisticsActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
+            AppNavigator.open(RecipeActivity.this, StatisticsActivity.class, true);
         });
         navRecipes.setOnClickListener(v -> {
             // Already here
@@ -89,12 +66,10 @@ public class RecipeActivity extends AppCompatActivity {
     }
 
     private void loadPantryIngredients() {
-        IngredientHelper.fetchAllIngredients(new IngredientCallback() {
+        pantryLoadJob = IngredientHelper.fetchAllIngredients(new IngredientCallback() {
             @Override
             public void onSuccess(List<Ingredient> ingredients) {
                 List<Ingredient> validIngredients = new ArrayList<>();
-                StringBuilder ingredientsListStr = new StringBuilder();
-
                 for (Ingredient ing : ingredients) {
                     DateUtils.ExpiryStatus status = DateUtils.INSTANCE.getExpiryStatus(ing.getExpiryDate());
                     // Filter out expired food
@@ -114,22 +89,17 @@ public class RecipeActivity extends AppCompatActivity {
                 });
 
                 if (validIngredients.isEmpty()) {
-                    pantryStatusTextView.setText("Your pantry is empty or all items are expired.");
+                    pantryStatusTextView.setText("Add pantry items for personalised matches. Showing starter ideas for now.");
                 } else {
                     pantryStatusTextView.setVisibility(View.GONE);
                     pantryAdapter.setIngredients(validIngredients);
-
-                    for (int i = 0; i < validIngredients.size(); i++) {
-                        ingredientsListStr.append(validIngredients.get(i).getName());
-                        if (i < validIngredients.size() - 1) {
-                            ingredientsListStr.append(", ");
-                        }
-                    }
-
-                    // Auto-search
-                    String finalIngredients = ingredientsListStr.toString();
-                    searchForRecipes(finalIngredients);
                 }
+
+                List<String> pantryNames = new ArrayList<>();
+                for (Ingredient ingredient : validIngredients) {
+                    pantryNames.add(ingredient.getName());
+                }
+                showLocalRecipes(pantryNames);
             }
 
             @Override
@@ -140,36 +110,15 @@ public class RecipeActivity extends AppCompatActivity {
         });
     }
 
-    private void searchForRecipes(String ingredientsList) {
-        loadingSpinner.setVisibility(View.VISIBLE);
-        String myApiKey = getString(R.string.api_key);
+    private void showLocalRecipes(List<String> pantryNames) {
+        loadingSpinner.setVisibility(View.GONE);
+        List<Recipe> recipes = LocalRecipeRepository.findSuggestions(pantryNames, 10);
+        recipeRecyclerView.setAdapter(new SearchRecipeAdapter(this, recipes));
+    }
 
-        Call<List<Recipe>> call = apiService.getRecipesByIngredients(ingredientsList, 10, myApiKey);
-        call.enqueue(new Callback<List<Recipe>>() {
-            @Override
-            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
-                loadingSpinner.setVisibility(View.GONE);
-
-                if (!response.isSuccessful()) {
-                    Toast.makeText(RecipeActivity.this, "Error finding recipes.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                List<Recipe> recipes = response.body();
-                if (recipes != null && !recipes.isEmpty()) {
-                    Log.d("RecipePage", "SUCCESS! Found " + recipes.size() + " recipes.");
-                    SearchRecipeAdapter adapter = new SearchRecipeAdapter(RecipeActivity.this, recipes);
-                    recipeRecyclerView.setAdapter(adapter);
-                } else {
-                    Toast.makeText(RecipeActivity.this, "No recipes found for those ingredients.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<Recipe>> call, Throwable t) {
-                loadingSpinner.setVisibility(View.GONE);
-                Toast.makeText(RecipeActivity.this, "Check your internet connection.", Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        if (pantryLoadJob != null) pantryLoadJob.cancel(null);
+        super.onDestroy();
     }
 }

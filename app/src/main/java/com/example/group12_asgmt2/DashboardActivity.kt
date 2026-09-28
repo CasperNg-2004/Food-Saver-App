@@ -1,14 +1,21 @@
 package com.example.group12_asgmt2
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.PieChart
@@ -16,14 +23,17 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.example.group12_asgmt2.Recipe
 import com.github.mikephil.charting.data.PieEntry
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class DashboardActivity : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "DashboardActivity"
+        private const val NOTIFICATION_PREFERENCES = "notification_preferences"
+        private const val KEY_PERMISSION_REQUESTED = "permission_requested"
+    }
 
     private lateinit var tvGreeting: TextView
     private lateinit var tvKitchenName: TextView
@@ -40,6 +50,7 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var pieChartStatus: PieChart
 
     private lateinit var btnNotification: ImageView
+    private lateinit var btnSettings: ImageView
     private lateinit var btnQuickAdd: LinearLayout
     private lateinit var btnSeeAllInventory: TextView
     private lateinit var btnSeeAllRecipes: TextView
@@ -52,6 +63,12 @@ class DashboardActivity : AppCompatActivity() {
 
     private lateinit var recyclerRecipes: RecyclerView
 
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        ExpiryNotificationManager.setEnabled(this, granted)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
@@ -61,6 +78,7 @@ class DashboardActivity : AppCompatActivity() {
         loadStaticDashboardFields()
         setupRecipeList()
         setupClickListeners()
+        requestNotificationPermissionIfNeeded()
     }
 
     private fun updateGreeting() {
@@ -77,8 +95,8 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadDashboardDataFromSupabase()
-        loadProfileFromSupabase()
+        loadDashboardData()
+        loadProfile()
     }
 
     private fun bindViews() {
@@ -98,6 +116,7 @@ class DashboardActivity : AppCompatActivity() {
         setupPieChart()
 
         btnNotification = findViewById(R.id.btnNotification)
+        btnSettings = findViewById(R.id.btnSettings)
         btnQuickAdd = findViewById(R.id.btnQuickAdd)
         btnSeeAllInventory = findViewById(R.id.btnSeeAllInventory)
         btnSeeAllRecipes = findViewById(R.id.btnSeeAllRecipes)
@@ -114,14 +133,14 @@ class DashboardActivity : AppCompatActivity() {
     private fun loadStaticDashboardFields() {
         // Mock historical data for now
         tvWeeklySaved.text = "$42.50 vs last week"
-        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+        tvWeeklySaved.setTextColor(ContextCompat.getColor(this, R.color.expiry_fresh))
     }
 
-    private fun loadProfileFromSupabase() {
+    private fun loadProfile() {
         val sharedPref = getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
         val profileId = sharedPref.getString("current_profile_id", null)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val profile = if (profileId != null) {
                     ProfileRepository.getById(profileId)
@@ -142,7 +161,10 @@ class DashboardActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                // Fallback
+                Log.e(TAG, "Unable to load the local profile", e)
+                withContext(Dispatchers.Main) {
+                    tvKitchenName.text = "Alex's Kitchen"
+                }
             }
         }
     }
@@ -158,20 +180,26 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun updatePieChart(fresh: Int, near: Int, expired: Int) {
         val entries = ArrayList<PieEntry>()
+        val colors = ArrayList<Int>()
         
-        // Only add entries if count > 0 to avoid visual glitches
-        if (fresh > 0) entries.add(PieEntry(fresh.toFloat(), "Fresh"))
-        if (near > 0) entries.add(PieEntry(near.toFloat(), "Near Expiry"))
-        if (expired > 0) entries.add(PieEntry(expired.toFloat(), "Expired"))
+        // Add each color together with its entry so colors do not shift when a count is zero.
+        if (fresh > 0) {
+            entries.add(PieEntry(fresh.toFloat(), "Fresh"))
+            colors.add(ContextCompat.getColor(this, R.color.expiry_fresh))
+        }
+        if (near > 0) {
+            entries.add(PieEntry(near.toFloat(), "Near Expiry"))
+            colors.add(ContextCompat.getColor(this, R.color.expiry_soon))
+        }
+        if (expired > 0) {
+            entries.add(PieEntry(expired.toFloat(), "Expired"))
+            colors.add(ContextCompat.getColor(this, R.color.expiry_expired))
+        }
 
         val dataSet = PieDataSet(entries, "Inventory Status")
         
         // Match the dot colors in your layout
-        dataSet.colors = listOf(
-            android.graphics.Color.parseColor("#14F25C"), // Fresh (Green)
-            android.graphics.Color.parseColor("#FFD700"), // Near Expiry (Yellow/Gold)
-            android.graphics.Color.parseColor("#FF4B4B")  // Expired (Red)
-        )
+        dataSet.colors = colors
         
         dataSet.setDrawValues(false)
         
@@ -180,10 +208,11 @@ class DashboardActivity : AppCompatActivity() {
         pieChartStatus.invalidate()
     }
 
-    private fun loadDashboardDataFromSupabase() {
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun loadDashboardData() {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val ingredients = IngredientRepository.getAll()
+                val historicalItems = IngredientRepository.getHistoricalData()
 
                 val totalItems = ingredients.size
                 val freshCount = ingredients.count {
@@ -203,29 +232,29 @@ class DashboardActivity : AppCompatActivity() {
                 var currentWeekWaste = 0.0
                 var lastWeekWaste = 0.0
 
-                ingredients.forEach {
-                    if (DateUtils.getExpiryStatus(it.expiryDate) == DateUtils.ExpiryStatus.EXPIRED) {
-                        // Try to parse createdAt, fallback to expiryDate if createdAt is null or invalid
-                        val dateString = it.createdAt?.take(10) ?: it.expiryDate
-                        try {
-                            val entryDate = java.time.LocalDate.parse(dateString)
-                            if (!entryDate.isBefore(oneWeekAgo)) {
-                                currentWeekWaste += it.price
-                            } else if (entryDate.isBefore(oneWeekAgo) && !entryDate.isBefore(twoWeeksAgo)) {
-                                lastWeekWaste += it.price
-                            }
-                        } catch (e: Exception) {
-                            // If parsing fails, just add to current waste to be safe
+                historicalItems.filter { it.status == "WASTED" }.forEach {
+                    val dateString = it.resolvedDate ?: return@forEach
+                    try {
+                        val resolvedDate = java.time.LocalDate.parse(dateString)
+                        if (!resolvedDate.isBefore(oneWeekAgo)) {
                             currentWeekWaste += it.price
+                        } else if (!resolvedDate.isBefore(twoWeeksAgo)) {
+                            lastWeekWaste += it.price
                         }
+                    } catch (_: Exception) {
+                        // Ignore malformed historical dates instead of assigning them to this week.
                     }
                 }
 
-                val usagePercent = if (totalItems > 0) {
-                    ((totalItems - expiredCount) * 100) / totalItems
+                val resolvedCount = historicalItems.count {
+                    it.status == "CONSUMED" || it.status == "WASTED"
+                }
+                val consumedCount = historicalItems.count { it.status == "CONSUMED" }
+                val usagePercent = if (resolvedCount > 0) {
+                    (consumedCount * 100) / resolvedCount
                 } else 0
 
-                val discardPercent = if (totalItems > 0) 100 - usagePercent else 0
+                val discardPercent = if (resolvedCount > 0) 100 - usagePercent else 0
 
                 withContext(Dispatchers.Main) {
                     tvTotalItems.text = totalItems.toString()
@@ -246,23 +275,21 @@ class DashboardActivity : AppCompatActivity() {
                     val difference = currentWeekWaste - lastWeekWaste
                     if (difference <= 0) {
                         tvWeeklySaved.text = String.format("-$%.2f less waste vs last week", kotlin.math.abs(difference))
-                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#14F25C"))
+                        tvWeeklySaved.setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.expiry_fresh))
                     } else {
                         tvWeeklySaved.text = String.format("+$%.2f more waste vs last week", difference)
-                        tvWeeklySaved.setTextColor(android.graphics.Color.parseColor("#FF4B4B"))
+                        tvWeeklySaved.setTextColor(ContextCompat.getColor(this@DashboardActivity, R.color.expiry_expired))
                     }
                     
                     updatePieChart(freshCount, nearExpiryCount, expiredCount)
                 }
 
-                // FETCH REAL RECIPES BASED ON INGREDIENTS
-                if (ingredients.isNotEmpty()) {
-                    val ingredientsListString = ingredients
-                        .filter { DateUtils.getExpiryStatus(it.expiryDate) != DateUtils.ExpiryStatus.EXPIRED }
-                        .take(5)
-                        .joinToString(",") { it.name }
-                    
-                    fetchRecipesFromApi(ingredientsListString)
+                val pantryNames = ingredients
+                    .filter { DateUtils.getExpiryStatus(it.expiryDate) != DateUtils.ExpiryStatus.EXPIRED }
+                    .map { it.name }
+                val recipes = LocalRecipeRepository.findSuggestions(pantryNames, 6)
+                withContext(Dispatchers.Main) {
+                    setupRecipeRecyclerView(recipes)
                 }
 
             } catch (e: Exception) {
@@ -283,36 +310,13 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchRecipesFromApi(ingredients: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.spoonacular.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(SpoonacularApi::class.java)
-        val apiKey = getString(R.string.api_key)
-
-        apiService.getRecipesByIngredients(ingredients, 10, apiKey).enqueue(object : retrofit2.Callback<List<Recipe>> {
-            override fun onResponse(call: retrofit2.Call<List<Recipe>>, response: retrofit2.Response<List<Recipe>>) {
-                if (response.isSuccessful && response.body() != null) {
-                    val recipes = response.body()!!
-                    setupRecipeRecyclerView(recipes)
-                }
-            }
-
-            override fun onFailure(call: retrofit2.Call<List<Recipe>>, t: Throwable) {
-                // Silently fail or log
-            }
-        })
-    }
-
     private fun setupRecipeRecyclerView(recipes: List<Recipe>) {
         recyclerRecipes.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         recyclerRecipes.adapter = RecipeAdapter(recipes) { recipe ->
             val intent = Intent(this, RecipeDetailActivity::class.java)
-            intent.putExtra("RECIPE_DATA", recipe as java.io.Serializable)
+            intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE, recipe as java.io.Serializable)
             startActivity(intent)
         }
     }
@@ -328,22 +332,20 @@ class DashboardActivity : AppCompatActivity() {
             showExpiryNotifications()
         }
 
+        btnSettings.setOnClickListener {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+
         btnQuickAdd.setOnClickListener {
             startActivity(Intent(this, AddEditIngredientActivity::class.java))
         }
 
         btnSeeAllInventory.setOnClickListener {
-            val intent = Intent(this, InventoryActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, InventoryActivity::class.java, false)
         }
 
         btnSeeAllRecipes.setOnClickListener {
-            val intent = Intent(this, RecipeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, RecipeActivity::class.java, false)
         }
 
         tvKitchenName.setOnClickListener {
@@ -355,26 +357,44 @@ class DashboardActivity : AppCompatActivity() {
         }
 
         navPantry.setOnClickListener {
-            val intent = Intent(this, InventoryActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, InventoryActivity::class.java, false)
         }
 
 
 
         navStats.setOnClickListener {
-            val intent = Intent(this, StatisticsActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, StatisticsActivity::class.java, false)
         }
 
         navRecipes.setOnClickListener {
-            val intent = Intent(this, RecipeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            AppNavigator.open(this, RecipeActivity::class.java, false)
+        }
+    }
+
+    private fun requestNotificationPermissionIfNeeded() {
+        if (!ExpiryNotificationManager.isEnabled(this)) return
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            ExpiryNotificationManager.runNow(this)
+            return
+        }
+
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            ExpiryNotificationManager.runNow(this)
+            return
+        }
+
+        val preferences = getSharedPreferences(
+            NOTIFICATION_PREFERENCES,
+            android.content.Context.MODE_PRIVATE
+        )
+        if (!preferences.getBoolean(KEY_PERMISSION_REQUESTED, false)) {
+            preferences.edit().putBoolean(KEY_PERMISSION_REQUESTED, true).apply()
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -399,15 +419,15 @@ class DashboardActivity : AppCompatActivity() {
             .setPositiveButton("Save") { _, _ ->
                 val newName = editText.text.toString().trim()
                 if (newName.isNotEmpty()) {
-                    updateProfileInSupabase(profileId, newName)
+                    updateProfile(profileId, newName)
                 }
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun updateProfileInSupabase(profileId: String?, newName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+    private fun updateProfile(profileId: String?, newName: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 if (profileId != null) {
                     // Update existing
@@ -421,18 +441,18 @@ class DashboardActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     tvKitchenName.text = "$newName's Kitchen"
-                    Toast.makeText(this@DashboardActivity, "Name updated in database", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DashboardActivity, "Kitchen name saved", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@DashboardActivity, "Error saving to DB: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@DashboardActivity, "Could not save name: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
     private fun showExpiryNotifications() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val ingredients = IngredientRepository.getAll()
                 val criticalIngredients = ingredients.filter {

@@ -2,6 +2,7 @@ package com.example.group12_asgmt2
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -12,8 +13,8 @@ interface IngredientCallback {
 
 object IngredientHelper {
     @JvmStatic
-    fun fetchAllIngredients(callback: IngredientCallback) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun fetchAllIngredients(callback: IngredientCallback): Job {
+        return CoroutineScope(Dispatchers.IO).launch {
             try {
                 val list = IngredientRepository.getAll()
                 withContext(Dispatchers.Main) {

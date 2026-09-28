@@ -32,7 +32,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Inventory"
-                    android:textColor="#8EB3A0"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
 
                 <TextView
@@ -41,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:text="My Pantry"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/text_primary"
                     android:textSize="22sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -54,7 +54,7 @@
                 android:background="@drawable/bg_notification_circle"
                 android:padding="11dp"
                 android:src="@android:drawable/ic_popup_reminder"
-                app:tint="#14F25C" />
+                app:tint="@color/green_primary" />
         </RelativeLayout>
 
     </LinearLayout>
@@ -121,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:text="No ingredients yet"
                         android:textSize="18sp"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/text_primary"
                         android:textStyle="bold"
                         android:layout_marginTop="8dp" />
 
@@ -130,7 +130,7 @@
                         android:layout_height="wrap_content"
                         android:text="Tap + to add your first item"
                         android:textSize="14sp"
-                        android:textColor="#A6B8AD"
+                        android:textColor="@color/text_secondary"
                         android:layout_marginTop="4dp" />
                 </LinearLayout>
 
@@ -156,8 +156,8 @@
             android:text="Add Ingredient"
             app:icon="@android:drawable/ic_input_add"
             app:backgroundTint="@color/green_primary"
-            android:textColor="@color/background"
-            app:iconTint="@color/background"
+            android:textColor="@color/on_accent"
+            app:iconTint="@color/on_accent"
             app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -166,7 +166,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="74dp"
-        android:background="#082517"
+        android:background="@color/navigation_background"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="4dp"
@@ -185,14 +185,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_view"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Home"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -208,14 +208,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_agenda"
-                app:tint="#14F25C" />
+                app:tint="@color/green_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Pantry"
-                android:textColor="#14F25C"
+                android:textColor="@color/green_primary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -233,14 +233,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_sort_by_size"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Stats"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -256,14 +256,14 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:src="@android:drawable/ic_menu_edit"
-                app:tint="#A6B8AD" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="Recipes"
-                android:textColor="#A6B8AD"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>

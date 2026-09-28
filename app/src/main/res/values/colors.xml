@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- ── Dark Green Backgrounds (matches dashboard) ── -->
-    <color name="background">#0F1C0F</color>
-    <color name="surface">#1A2E1A</color>
-    <color name="surface_elevated">#1F3520</color>
-    <color name="divider">#2A3D2A</color>
-    <color name="green_dim">#2D4A2D</color>
+    <!-- Light theme surfaces -->
+    <color name="background">#F7FAF8</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_elevated">#EAF5ED</color>
+    <color name="divider">#D3E2D7</color>
+    <color name="green_dim">#B8D8C0</color>
+    <color name="navigation_background">#FFFFFF</color>
+    <color name="system_navigation_background">#0E5B2A</color>
+    <color name="input_background">#F1F7F3</color>
+    <color name="input_border">#C4D8C9</color>
+    <color name="tag_background">#E8F3EB</color>
+    <color name="tag_border">#BBD3C1</color>
+    <color name="notification_background">#DDF5E5</color>
 
     <!-- ── Accent (bright neon green from dashboard) ── -->
-    <color name="green_primary">#4ADE80</color>
-    <color name="green_button">#22C55E</color>
-    <color name="green_dark">#166534</color>
-    <color name="green_light">#86EFAC</color>
+    <color name="green_primary">#16803C</color>
+    <color name="green_button">#16803C</color>
+    <color name="green_dark">#0E5B2A</color>
+    <color name="green_light">#DDF5E5</color>
+    <color name="on_accent">#FFFFFF</color>
 
     <!-- ── Text ── -->
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#86EFAC</color>
-    <color name="text_hint">#4D7A4D</color>
+    <color name="text_primary">#132218</color>
+    <color name="text_secondary">#45634F</color>
+    <color name="text_hint">#6D8173</color>
 
     <!-- ── Expiry Status ── -->
-    <color name="expiry_expired">#F87171</color>
-    <color name="expiry_soon">#FBBF24</color>
-    <color name="expiry_fresh">#4ADE80</color>
+    <color name="expiry_expired">#B42318</color>
+    <color name="expiry_soon">#9A5B00</color>
+    <color name="expiry_fresh">#16803C</color>
 
     <!-- ── Category Badges (vibrant on dark background) ── -->
     <color name="category_protein">#F87171</color>

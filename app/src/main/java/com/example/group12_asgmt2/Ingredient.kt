@@ -1,14 +1,6 @@
 package com.example.group12_asgmt2
 
-import kotlinx.serialization.EncodeDefault
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@OptIn(ExperimentalSerializationApi::class)
-@Serializable
 data class Ingredient(
-    @EncodeDefault(EncodeDefault.Mode.NEVER)
     val id: String? = null,
 
     val name: String,
@@ -17,33 +9,24 @@ data class Ingredient(
     val unit: String,
     val price: Double,
 
-    @SerialName("expiry_date")
     val expiryDate: String,
 
-    @SerialName("purchase_date")
     val purchaseDate: String? = null,
 
-    @SerialName("alert_enabled")
     val alertEnabled: Boolean? = true,
 
-    @SerialName("quick_tag")
     val quickTag: String? = null,
 
-    @SerialName("photo_url")
     val photoUrl: String? = null,
 
-    @EncodeDefault(EncodeDefault.Mode.NEVER)
-    @SerialName("created_at")
     val createdAt: String? = null,
 
     val status: String? = "ACTIVE",
 
-    @SerialName("resolved_date")
     val resolvedDate: String? = null
 )
 
 /** Payload used for INSERT and UPDATE */
-@Serializable
 data class IngredientPayload(
     val name: String,
     val category: String,
@@ -51,24 +34,18 @@ data class IngredientPayload(
     val unit: String,
     val price: Double,
 
-    @SerialName("expiry_date")
     val expiryDate: String,
 
-    @SerialName("purchase_date")
     val purchaseDate: String? = null,
 
-    @SerialName("alert_enabled")
     val alertEnabled: Boolean? = true,
 
-    @SerialName("quick_tag")
     val quickTag: String? = null,
 
-    @SerialName("photo_url")
     val photoUrl: String? = null,
 
     val status: String? = "ACTIVE",
 
-    @SerialName("resolved_date")
     val resolvedDate: String? = null
 )
 

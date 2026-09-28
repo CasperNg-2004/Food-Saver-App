@@ -1,33 +1,69 @@
 package com.example.group12_asgmt2
 
-import io.github.jan.supabase.postgrest.postgrest
-import io.github.jan.supabase.postgrest.query.Columns
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.util.UUID
 
 object ProfileRepository {
-    private val table = SupabaseManager.client.postgrest["profiles"]
+    private const val STORAGE_KEY = "profiles"
+    private val gson = Gson()
+    private val lock = Mutex()
 
     suspend fun getAll(): List<Profile> = withContext(Dispatchers.IO) {
-        table.select(Columns.ALL).decodeList<Profile>()
+        lock.withLock { readAll() }
     }
 
     suspend fun getById(id: String): Profile? = withContext(Dispatchers.IO) {
-        table.select(Columns.ALL) {
-            filter { eq("id", id) }
-        }.decodeSingleOrNull<Profile>()
+        lock.withLock { readAll().firstOrNull { it.id == id } }
     }
 
     suspend fun insert(payload: ProfilePayload): Profile = withContext(Dispatchers.IO) {
-        table.insert(payload) {
-            select() // Return the inserted row so we can get the generated id
-        }.decodeSingle<Profile>()
+        lock.withLock {
+            val profile = Profile(
+                id = UUID.randomUUID().toString(),
+                username = payload.username,
+                kitchenName = payload.kitchenName,
+                createdAt = Instant.now().toString()
+            )
+            val profiles = readAll().toMutableList().apply { add(profile) }
+            writeAll(profiles)
+            profile
+        }
     }
 
-    suspend fun update(id: String, payload: ProfilePayload): Profile = withContext(Dispatchers.IO) {
-        table.update(payload) {
-            filter { eq("id", id) }
-            select() // Return the updated row
-        }.decodeSingle<Profile>()
+    suspend fun update(id: String, payload: ProfilePayload): Profile =
+        withContext(Dispatchers.IO) {
+            lock.withLock {
+                val profiles = readAll().toMutableList()
+                val index = profiles.indexOfFirst { it.id == id }
+                check(index >= 0) { "Profile not found" }
+                val updated = profiles[index].copy(
+                    username = payload.username,
+                    kitchenName = payload.kitchenName
+                )
+                profiles[index] = updated
+                writeAll(profiles)
+                updated
+            }
+        }
+
+    private fun readAll(): List<Profile> {
+        val json = LocalStorage.preferences.getString(STORAGE_KEY, null) ?: return emptyList()
+        val type = object : TypeToken<List<Profile>>() {}.type
+        return runCatching { gson.fromJson<List<Profile>>(json, type) }
+            .getOrNull()
+            .orEmpty()
+    }
+
+    private fun writeAll(profiles: List<Profile>) {
+        val saved = LocalStorage.preferences.edit()
+            .putString(STORAGE_KEY, gson.toJson(profiles))
+            .commit()
+        check(saved) { "Could not save profile on this device" }
     }
 }

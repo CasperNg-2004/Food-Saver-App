@@ -173,8 +173,8 @@ class FragmentStatistics : Fragment() {
             }
         }
 
-        val currentWastedCost = currentWeek.filter { it.status == "WASTED" }.sumOf { it.price * it.quantity }
-        val lastWastedCost = lastWeek.filter { it.status == "WASTED" }.sumOf { it.price * it.quantity }
+        val currentWastedCost = currentWeek.filter { it.status == "WASTED" }.sumOf { it.price }
+        val lastWastedCost = lastWeek.filter { it.status == "WASTED" }.sumOf { it.price }
         val wasteDiff = currentWastedCost - lastWastedCost
 
         val insight1 = if (wasteDiff <= 0) {
@@ -330,10 +330,10 @@ class FragmentStatistics : Fragment() {
     private fun filterAndRenderData(timeFrame: String) {
         val now = LocalDate.now()
         val thresholdDate = when (timeFrame) {
-            "Day" -> now.minusDays(1)
-            "Week" -> now.minusDays(7)
-            "Month" -> now.minusDays(30)
-            else -> now.minusDays(30)
+            "Day" -> now
+            "Week" -> now.minusDays(6)
+            "Month" -> now.minusDays(29)
+            else -> now.minusDays(29)
         }
 
         val filteredData = masterData.filter {
@@ -342,11 +342,11 @@ class FragmentStatistics : Fragment() {
                 try {
                     val resolvedDate = LocalDate.parse(dateStr)
                     !resolvedDate.isBefore(thresholdDate)
-                } catch (e: Exception) {
-                    true // If parse fails, include it
+                } catch (_: Exception) {
+                    false
                 }
             } else {
-                true
+                false
             }
         }
 
@@ -369,7 +369,7 @@ class FragmentStatistics : Fragment() {
         }
         
         // Metric 3: Single Wastage Metric
-        val totalWasteCost = currentWasted.sumOf { it.price * it.quantity }
+        val totalWasteCost = currentWasted.sumOf { it.price }
         
         // New Metric: Total Consumed Cost
         val totalConsumedCost = currentConsumed.sumOf { it.price }
@@ -391,11 +391,11 @@ class FragmentStatistics : Fragment() {
     private fun setupPieChart() {
         pieChart.description.isEnabled = false
         pieChart.legend.isEnabled = true
-        pieChart.legend.textColor = Color.WHITE
+        pieChart.legend.textColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
         pieChart.isDrawHoleEnabled = true
         pieChart.setHoleColor(Color.TRANSPARENT)
         pieChart.setDrawEntryLabels(true)
-        pieChart.setEntryLabelColor(Color.WHITE)
+        pieChart.setEntryLabelColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
     }
 
     private fun updatePieChart(habitsData: Map<String, Float>) {
@@ -403,27 +403,27 @@ class FragmentStatistics : Fragment() {
         val colors = ArrayList<Int>()
         
         val colorMap = mapOf(
-            Category.DAIRY.displayName to Color.parseColor("#3498DB"),   // Blue
-            Category.PROTEIN.displayName to Color.parseColor("#E74C3C"), // Red
-            Category.GRAIN.displayName to Color.parseColor("#F1C40F"),   // Yellow
-            Category.VITAMIN.displayName to Color.parseColor("#9B59B6"), // Purple
-            Category.VEGETABLE.displayName to Color.parseColor("#1ABC9C"),// Teal
-            Category.FRUIT.displayName to Color.parseColor("#E67E22"),   // Orange
-            Category.SPICE.displayName to Color.parseColor("#D35400"),   // Dark Orange
-            Category.OTHER.displayName to Color.parseColor("#95A5A6")    // Grey
+            Category.DAIRY.displayName to ContextCompat.getColor(requireContext(), R.color.category_dairy),
+            Category.PROTEIN.displayName to ContextCompat.getColor(requireContext(), R.color.category_protein),
+            Category.GRAIN.displayName to ContextCompat.getColor(requireContext(), R.color.category_grain),
+            Category.VITAMIN.displayName to ContextCompat.getColor(requireContext(), R.color.category_vitamin),
+            Category.VEGETABLE.displayName to ContextCompat.getColor(requireContext(), R.color.category_vegetable),
+            Category.FRUIT.displayName to ContextCompat.getColor(requireContext(), R.color.category_fruit),
+            Category.SPICE.displayName to ContextCompat.getColor(requireContext(), R.color.category_spice),
+            Category.OTHER.displayName to ContextCompat.getColor(requireContext(), R.color.category_other)
         )
 
         for ((category, count) in habitsData) {
             entries.add(PieEntry(count, category))
-            // Use distinct color if available, otherwise random/fallback
-            val color = colorMap[category] ?: Color.parseColor("#" + Integer.toHexString((category.hashCode() * 0xFFFFFF) or 0xFF000000.toInt()).substring(2))
+            val color = colorMap[category]
+                ?: ContextCompat.getColor(requireContext(), R.color.category_other)
             colors.add(color)
         }
 
         val dataSet = PieDataSet(entries, "")
         dataSet.colors = colors
         dataSet.valueTextSize = 12f
-        dataSet.valueTextColor = Color.WHITE
+        dataSet.valueTextColor = ContextCompat.getColor(requireContext(), R.color.text_primary)
 
         val data = PieData(dataSet)
         pieChart.data = data

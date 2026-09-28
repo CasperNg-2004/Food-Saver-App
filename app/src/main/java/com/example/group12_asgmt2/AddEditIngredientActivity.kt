@@ -10,11 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.group12_asgmt2.databinding.ActivityAddEditIngredientBinding
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.format.ResolverStyle
 import java.util.Calendar
 import java.util.Locale
 
 class AddEditIngredientActivity : AppCompatActivity() {
+
+    private val displayDateFormat = DateTimeFormatter
+        .ofPattern("MM/dd/uuuu", Locale.US)
+        .withResolverStyle(ResolverStyle.STRICT)
+    private val dbDateFormat = DateTimeFormatter.ISO_LOCAL_DATE
 
     private lateinit var binding: ActivityAddEditIngredientBinding
     private var editingIngredient: Ingredient? = null
@@ -91,8 +99,8 @@ class AddEditIngredientActivity : AppCompatActivity() {
             this,
             { _, year, month, dayOfMonth ->
                 calendar.set(year, month, dayOfMonth)
-                val format = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-                editText.setText(format.format(calendar.time))
+                val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                editText.setText(selectedDate.format(displayDateFormat))
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -104,7 +112,7 @@ class AddEditIngredientActivity : AppCompatActivity() {
     private fun setupQuantityButtons() {
         binding.incForm.btnMinus.setOnClickListener {
             if (quantity > 0.5) {
-                quantity -= 1.0
+                quantity = (quantity - 1.0).coerceAtLeast(0.5)
                 updateQuantityUI()
             }
         }
@@ -139,7 +147,7 @@ class AddEditIngredientActivity : AppCompatActivity() {
             selectedTag = name
             resetTags()
             tag.setBackgroundResource(R.drawable.bg_tag_selected)
-            tag.setTextColor(getColor(android.R.color.white))
+            tag.setTextColor(getColor(R.color.on_accent))
         }
 
         binding.incOptions.tagFresh.setOnClickListener { selectTag(binding.incOptions.tagFresh, "Fresh") }
@@ -185,9 +193,11 @@ class AddEditIngredientActivity : AppCompatActivity() {
         // Dates formatting (DB stores as YYYY-MM-DD, UI shows MM/DD/YYYY)
         if (ingredient.purchaseDate != null) {
             binding.incForm.etPurchaseDate.setText(toDisplayDate(ingredient.purchaseDate))
+            setCalendarDate(purchaseCalendar, ingredient.purchaseDate)
         }
         if (ingredient.expiryDate.isNotEmpty()) {
             binding.incForm.etExpiryDate.setText(toDisplayDate(ingredient.expiryDate))
+            setCalendarDate(expiryCalendar, ingredient.expiryDate)
         }
 
         // Toggle Alert
@@ -233,7 +243,27 @@ class AddEditIngredientActivity : AppCompatActivity() {
             return
         }
 
-        val parsedPrice = priceText.toDoubleOrNull() ?: 0.0
+        val parsedPrice = priceText.toDoubleOrNull()
+        if (parsedPrice == null || parsedPrice < 0.0) {
+            Toast.makeText(this, "Enter a valid non-negative price", Toast.LENGTH_SHORT).show()
+            binding.incForm.etPrice.requestFocus()
+            return
+        }
+
+        val expiryDate = parseDisplayDate(expiryDateText)
+        if (expiryDate == null) {
+            Toast.makeText(this, "Expiry date must use MM/DD/YYYY", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val purchaseDate = if (purchaseDateText.isEmpty()) null else parseDisplayDate(purchaseDateText)
+        if (purchaseDateText.isNotEmpty() && purchaseDate == null) {
+            Toast.makeText(this, "Purchase date must use MM/DD/YYYY", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (purchaseDate != null && purchaseDate.isAfter(expiryDate)) {
+            Toast.makeText(this, "Purchase date cannot be after expiry date", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         val payload = IngredientPayload(
             name = itemName,
@@ -241,8 +271,8 @@ class AddEditIngredientActivity : AppCompatActivity() {
             quantity = quantity,
             unit = unit,
             price = parsedPrice,
-            expiryDate = toDbDate(expiryDateText),
-            purchaseDate = if (purchaseDateText.isEmpty()) null else toDbDate(purchaseDateText),
+            expiryDate = expiryDate.format(dbDateFormat),
+            purchaseDate = purchaseDate?.format(dbDateFormat),
             alertEnabled = expiryAlertOn,
             quickTag = selectedTag,
             photoUrl = photoUrl
@@ -272,27 +302,27 @@ class AddEditIngredientActivity : AppCompatActivity() {
         }
     }
 
-    // Converts MM/DD/YYYY from UI to YYYY-MM-DD for DB
-    private fun toDbDate(input: String): String {
-        try {
-            val inputFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-            val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = inputFormat.parse(input) ?: return input
-            return outputFormat.format(date)
-        } catch (e: Exception) {
-            return input
-        }
+    private fun parseDisplayDate(input: String): LocalDate? = try {
+        LocalDate.parse(input, displayDateFormat)
+    } catch (_: DateTimeParseException) {
+        null
     }
 
     // Converts YYYY-MM-DD from DB to MM/DD/YYYY for UI
     private fun toDisplayDate(input: String): String {
-        try {
-            val dbFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val displayFormat = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-            val date = dbFormat.parse(input) ?: return input
-            return displayFormat.format(date)
-        } catch (e: Exception) {
+        return try {
+            LocalDate.parse(input, dbDateFormat).format(displayDateFormat)
+        } catch (_: DateTimeParseException) {
             return input
+        }
+    }
+
+    private fun setCalendarDate(calendar: Calendar, dbDate: String) {
+        try {
+            val date = LocalDate.parse(dbDate, dbDateFormat)
+            calendar.set(date.year, date.monthValue - 1, date.dayOfMonth)
+        } catch (_: DateTimeParseException) {
+            // Keep today's date if legacy data is malformed.
         }
     }
 }

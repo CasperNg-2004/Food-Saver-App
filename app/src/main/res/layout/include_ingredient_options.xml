@@ -16,7 +16,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@android:drawable/ic_lock_idle_alarm"
-            app:tint="#19F25B" />
+            app:tint="@color/green_primary" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Expiry Alert"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/on_accent"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Notify 2 days before"
-                android:textColor="#7D9A8A"
+                android:textColor="@color/text_hint"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -46,8 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
-            android:thumbTint="#FFFFFF"
-            android:trackTint="#19F25B" />
+            android:thumbTint="@color/text_primary"
+            android:trackTint="@color/green_primary" />
     </LinearLayout>
 
     <TextView
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:text="Quick Tags"
-        android:textColor="#D9E8DE"
+        android:textColor="@color/text_primary"
         android:textSize="13sp" />
 
     <HorizontalScrollView
@@ -79,7 +79,7 @@
                 android:paddingEnd="14dp"
                 android:paddingBottom="7dp"
                 android:text="Fresh"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/text_primary"
                 android:textSize="12sp" />
 
             <TextView
@@ -93,7 +93,7 @@
                 android:paddingEnd="14dp"
                 android:paddingBottom="7dp"
                 android:text="Frozen"
-                android:textColor="#7D9A8A"
+                android:textColor="@color/text_hint"
                 android:textSize="12sp" />
 
             <TextView
@@ -107,7 +107,7 @@
                 android:paddingEnd="14dp"
                 android:paddingBottom="7dp"
                 android:text="Canned"
-                android:textColor="#7D9A8A"
+                android:textColor="@color/text_hint"
                 android:textSize="12sp" />
 
             <TextView
@@ -121,7 +121,7 @@
                 android:paddingEnd="14dp"
                 android:paddingBottom="7dp"
                 android:text="Opened"
-                android:textColor="#7D9A8A"
+                android:textColor="@color/text_hint"
                 android:textSize="12sp" />
         </LinearLayout>
     </HorizontalScrollView>

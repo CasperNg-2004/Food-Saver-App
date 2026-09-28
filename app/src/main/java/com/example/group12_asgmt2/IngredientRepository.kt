@@ -1,74 +1,111 @@
 package com.example.group12_asgmt2
 
-import io.github.jan.supabase.postgrest.from
-import io.github.jan.supabase.postgrest.query.Order
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import java.time.Instant
+import java.util.UUID
 
 object IngredientRepository {
+    private const val STORAGE_KEY = "ingredients"
+    private const val ACTIVE = "ACTIVE"
+    private val gson = Gson()
+    private val lock = Mutex()
 
-    private val supabase = SupabaseManager.client
-    private const val TABLE = "ingredients"
-
-    /** Fetch all ingredients sorted by expiry date ascending. */
-    suspend fun getAll(): List<Ingredient> {
-        return supabase.from(TABLE)
-            .select {
-                filter { eq("status", "ACTIVE") }
-                order(column = "expiry_date", order = Order.ASCENDING)
-            }
-            .decodeList<Ingredient>()
-    }
-
-    /** Fetch ingredients filtered by category, sorted by expiry date ascending. */
-    suspend fun getByCategory(category: String): List<Ingredient> {
-        return supabase.from(TABLE)
-            .select {
-                filter { 
-                    eq("category", category) 
-                    eq("status", "ACTIVE")
-                }
-                order(column = "expiry_date", order = Order.ASCENDING)
-            }
-            .decodeList<Ingredient>()
-    }
-
-    /** Insert a new ingredient. */
-    suspend fun insert(payload: IngredientPayload) {
-        supabase.from(TABLE).insert(payload)
-    }
-
-    /** Update an existing ingredient by id. */
-    suspend fun update(id: String, payload: IngredientPayload) {
-        supabase.from(TABLE).update(payload) {
-            filter { eq("id", id) }
+    suspend fun getAll(): List<Ingredient> = withContext(Dispatchers.IO) {
+        lock.withLock {
+            readAll().filter { it.status == ACTIVE }.sortedBy { it.expiryDate }
         }
     }
 
-    @kotlinx.serialization.Serializable
-    private data class StatusUpdate(
-        val status: String,
-        @kotlinx.serialization.SerialName("resolved_date") val resolvedDate: String
-    )
+    suspend fun getByCategory(category: String): List<Ingredient> = withContext(Dispatchers.IO) {
+        lock.withLock {
+            readAll()
+                .filter { it.status == ACTIVE && it.category == category }
+                .sortedBy { it.expiryDate }
+        }
+    }
 
-    /** Mark an ingredient as consumed. */
+    suspend fun insert(payload: IngredientPayload) = withContext(Dispatchers.IO) {
+        lock.withLock {
+            val ingredients = readAll().toMutableList()
+            ingredients.add(payload.toIngredient())
+            writeAll(ingredients)
+        }
+    }
+
+    suspend fun update(id: String, payload: IngredientPayload) = withContext(Dispatchers.IO) {
+        lock.withLock {
+            val ingredients = readAll().toMutableList()
+            val index = ingredients.indexOfFirst { it.id == id }
+            check(index >= 0) { "Ingredient not found" }
+            val existing = ingredients[index]
+            ingredients[index] = payload.toIngredient(id, existing.createdAt)
+            writeAll(ingredients)
+        }
+    }
+
     suspend fun markAsConsumed(id: String, date: String) {
-        supabase.from(TABLE).update(StatusUpdate("CONSUMED", date)) {
-            filter { eq("id", id) }
-        }
+        updateStatus(id, "CONSUMED", date)
     }
 
-    /** Mark an ingredient as wasted. */
     suspend fun markAsWasted(id: String, date: String) {
-        supabase.from(TABLE).update(StatusUpdate("WASTED", date)) {
-            filter { eq("id", id) }
-        }
+        updateStatus(id, "WASTED", date)
     }
 
-    /** Fetch historical data (CONSUMED or WASTED items). */
-    suspend fun getHistoricalData(): List<Ingredient> {
-        return supabase.from(TABLE)
-            .select {
-                filter { neq("status", "ACTIVE") }
-            }
-            .decodeList<Ingredient>()
+    suspend fun getHistoricalData(): List<Ingredient> = withContext(Dispatchers.IO) {
+        lock.withLock { readAll().filter { it.status != ACTIVE } }
     }
+
+    private suspend fun updateStatus(id: String, status: String, date: String) =
+        withContext(Dispatchers.IO) {
+            lock.withLock {
+                val ingredients = readAll().toMutableList()
+                val index = ingredients.indexOfFirst { it.id == id }
+                check(index >= 0) { "Ingredient not found" }
+                ingredients[index] = ingredients[index].copy(
+                    status = status,
+                    resolvedDate = date
+                )
+                writeAll(ingredients)
+            }
+        }
+
+    private fun readAll(): List<Ingredient> {
+        val json = LocalStorage.preferences.getString(STORAGE_KEY, null) ?: return emptyList()
+        val type = object : TypeToken<List<Ingredient>>() {}.type
+        return runCatching { gson.fromJson<List<Ingredient>>(json, type) }
+            .getOrNull()
+            .orEmpty()
+    }
+
+    private fun writeAll(ingredients: List<Ingredient>) {
+        val saved = LocalStorage.preferences.edit()
+            .putString(STORAGE_KEY, gson.toJson(ingredients))
+            .commit()
+        check(saved) { "Could not save ingredients on this device" }
+    }
+
+    private fun IngredientPayload.toIngredient(
+        id: String = UUID.randomUUID().toString(),
+        createdAt: String? = Instant.now().toString()
+    ) = Ingredient(
+        id = id,
+        name = name,
+        category = category,
+        quantity = quantity,
+        unit = unit,
+        price = price,
+        expiryDate = expiryDate,
+        purchaseDate = purchaseDate,
+        alertEnabled = alertEnabled,
+        quickTag = quickTag,
+        photoUrl = photoUrl,
+        createdAt = createdAt,
+        status = status ?: ACTIVE,
+        resolvedDate = resolvedDate
+    )
 }

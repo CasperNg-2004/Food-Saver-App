@@ -3,14 +3,14 @@
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
             <corners android:radius="8dp" />
-            <solid android:color="#204333" />
+            <solid android:color="@color/green_dim" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <clip android:clipOrientation="horizontal" android:gravity="left">
             <shape android:shape="rectangle">
                 <corners android:radius="8dp" />
-                <solid android:color="#14F25C" />
+                <solid android:color="@color/green_primary" />
             </shape>
         </clip>
     </item>

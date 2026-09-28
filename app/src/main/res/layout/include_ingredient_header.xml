@@ -16,7 +16,7 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_arrow_back"
-            app:tint="#FFFFFF" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:id="@+id/tvTitle"
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:text="Add Item"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -33,6 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="14dp"
-        android:background="#1B4A34" />
+        android:background="@color/divider" />
 
 </LinearLayout>

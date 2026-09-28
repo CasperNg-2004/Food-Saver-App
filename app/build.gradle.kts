@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -36,6 +35,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -57,15 +57,12 @@ dependencies {
     // MPAndroidChart Library
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     
-    // Recipe Network Dependencies
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    // Local JSON storage and bundled recipe images
+    implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     
-    // Inventory Database & Network Dependencies
-    implementation(libs.supabase.postgrest)
-    implementation(libs.supabase.storage)
-    implementation(libs.ktor.client.android)
+    // Local inventory storage and lifecycle-aware background work
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.work.runtime)
 }

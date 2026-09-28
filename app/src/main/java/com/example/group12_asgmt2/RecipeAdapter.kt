@@ -34,7 +34,7 @@ class RecipeAdapter(
 
         // Load image URL from API with Glide and rounded corners
         Glide.with(holder.itemView.context)
-            .load(item.image)
+            .load(item.imageResourceId.takeIf { it != 0 } ?: item.image)
             .transform(CenterCrop(), RoundedCorners(16))
             .into(holder.ivRecipe)
 
@@ -45,7 +45,7 @@ class RecipeAdapter(
             ?.takeIf { it.isNotEmpty() }
             ?: "No pantry match"
 
-        holder.tvTime.text = "30m"
+        holder.tvTime.text = "${item.readyInMinutes}m"
         holder.tvTitle.text = item.title
         holder.tvExpiryTag.text = "Uses your: $usedNames"
         holder.tvIngredientTag.text = "Uses your: $usedNames"

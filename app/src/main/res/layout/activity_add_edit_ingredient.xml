@@ -34,7 +34,7 @@
             android:insetBottom="0dp"
             android:text="Save to Inventory"
             android:textAllCaps="false"
-            android:textColor="#022710"
+            android:textColor="@color/on_accent"
             android:textSize="17sp"
             android:textStyle="bold" />
 
